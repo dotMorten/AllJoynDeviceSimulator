@@ -289,7 +289,8 @@ namespace AdapterLib
         {
             if (Timestamp > 0)
                 await Task.Delay((int)Timestamp);
-            var steps = TransitionPeriod / 16;
+            var steps = Math.Floor(30d / (1000d / TransitionPeriod));
+            var stepdelay = TransitionPeriod / steps;
             var startHue = LampState_Hue;
             var startBrightness = LampState_Brightness;
             var startSaturation = LampState_Saturation;
@@ -324,6 +325,7 @@ namespace AdapterLib
                 }
                 OnPropertyChanged(nameof(Color));
                 OnPropertyChanged(nameof(ColorFullBrightness));
+                await Task.Delay((int)stepdelay);
             }
             if (NewState.Hue.HasValue && LampDetails_Color)
             {
@@ -356,17 +358,22 @@ namespace AdapterLib
         {
             get
             {
+                var h = (float)(this.hue * 360d / uint.MaxValue);
+                var s = (float)(this.saturation / (double)uint.MaxValue);
+                var b = this.brightness;
+                if (!LampDetails_Color) { h = 0; s = 0; }
+                if (!LampDetails_Dimmable) { b = uint.MaxValue; }
                 var brightnessFactor = (this.saturation / (double)UInt32.MaxValue) + 1;
-                return FromAhsb( 
-                    (float)(this.hue * 360d / uint.MaxValue ), 
-                    (float)(this.saturation / (double)uint.MaxValue),
-                   (float)(this.brightness / (double)uint.MaxValue / brightnessFactor));
+                var b2 = (float)(b / (double)uint.MaxValue / brightnessFactor);
+                return FromAhsb(h, s, b2);
             }
         }
         public Windows.UI.Color ColorFullBrightness
         {
             get
             {
+                if (!LampDetails_Color)
+                    return Windows.UI.Colors.White;
                 return FromAhsb(
                     (float)(this.hue * 360d / uint.MaxValue),
                     (float)(this.saturation / (double)uint.MaxValue),
