@@ -356,8 +356,6 @@ namespace AdapterLib
         {
             get
             {
-                if (!LampDetails_Color)
-                    return Windows.UI.Colors.White;
                 var brightnessFactor = (this.saturation / (double)UInt32.MaxValue) + 1;
                 return FromAhsb( 
                     (float)(this.hue * 360d / uint.MaxValue ), 
@@ -369,8 +367,6 @@ namespace AdapterLib
         {
             get
             {
-                if (!LampDetails_Color)
-                    return Windows.UI.Colors.White;
                 return FromAhsb(
                     (float)(this.hue * 360d / uint.MaxValue),
                     (float)(this.saturation / (double)uint.MaxValue),

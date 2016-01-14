@@ -95,7 +95,6 @@ namespace HeadedAdapterApp
                 b.LampState_Hue = 0;
                 b.LampState_Brightness = UInt32.MaxValue;
                 b.LampState_Saturation = b.LampDetails_Color ? UInt32.MaxValue : 0;
-                b.LampState_ColorTemp =  bulb.LampDetails_MaxTemperature;
                 b.LampState_OnOff = true;
                 adapter.AddBulb(b);
             }
@@ -119,7 +118,6 @@ namespace HeadedAdapterApp
             bulb.LampState_Hue = 0;
             bulb.LampState_Brightness = UInt32.MaxValue;
             bulb.LampState_Saturation = bulb.LampDetails_Color ? UInt32.MaxValue : 0;
-            bulb.LampState_ColorTemp = bulb.LampDetails_MaxTemperature;
             bulb.LampState_OnOff = true;
             adapter.AddBulb(bulb);
             Button_Click_Cancel(sender, e);
