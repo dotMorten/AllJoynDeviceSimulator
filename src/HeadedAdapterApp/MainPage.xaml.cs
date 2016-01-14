@@ -81,28 +81,14 @@ namespace HeadedAdapterApp
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
             }
 
-            var bulb = new MockLightingServiceHandler($"Mock Dimmable Color Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
+            var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color+Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
             Bulbs.Add(bulb);
-            bulb = new MockLightingServiceHandler($"Mock Dimmable Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
+            bulb = new MockLightingServiceHandler($"Mock Dimmable+Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
             Bulbs.Add(bulb);
             bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
             Bulbs.Add(bulb);
             bulb = new MockLightingServiceHandler($"Mock Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
             Bulbs.Add(bulb);
-
-            //Random r = new Random();
-            //for (int i = 0; i < 50; i++)
-            //{
-            //    bool supportsBrightness = r.Next(1) == 0;
-            //    bool supportsTemperature = r.Next() == 0;
-            //    var bulb = new MockLightingServiceHandler($"Bulb {i}", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
-            //    bulb.LampState_Hue = ((UInt32)r.Next(Int32.MaxValue)) * 2;
-            //    bulb.LampState_Brightness = ((UInt32)r.Next(Int32.MaxValue)) * 2;
-            //    bulb.LampState_Saturation = ((UInt32)r.Next(Int32.MaxValue)) * 2;
-            //    bulb.LampState_ColorTemp = (uint) r.Next((int)(bulb.LampDetails_MaxTemperature - bulb.LampDetails_MinTemperature)) + bulb.LampDetails_MinTemperature;
-            //    bulb.LampState_OnOff = r.Next(1) == 0;
-            //    Bulbs.Add(bulb);
-            //}
 
             foreach (var b in Bulbs)
             {
@@ -117,5 +103,31 @@ namespace HeadedAdapterApp
         }
 
         public ObservableCollection<MockLightingServiceHandler> Bulbs { get; set; } = new ObservableCollection<MockLightingServiceHandler>();
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            AddBulbWindow.Visibility = Visibility.Visible;
+            bulbName.Text = string.Format("Mock Bulb {0}", Bulbs.Count + 1);
+        }
+
+        private void Button_Click_OK(object sender, RoutedEventArgs e)
+        {
+            var bulb = new MockLightingServiceHandler(bulbName.Text, Guid.NewGuid().ToString(),
+                switchDimming.IsOn, switchColor.IsOn, switchTemperature.IsOn, this.Dispatcher);
+            Bulbs.Add(bulb);
+
+            bulb.LampState_Hue = 0;
+            bulb.LampState_Brightness = UInt32.MaxValue;
+            bulb.LampState_Saturation = bulb.LampDetails_Color ? UInt32.MaxValue : 0;
+            bulb.LampState_ColorTemp = bulb.LampDetails_MaxTemperature;
+            bulb.LampState_OnOff = true;
+            adapter.AddBulb(bulb);
+            Button_Click_Cancel(sender, e);
+        }
+
+        private void Button_Click_Cancel(object sender, RoutedEventArgs e)
+        {
+            AddBulbWindow.Visibility = Visibility.Collapsed;
+        }
     }
 }

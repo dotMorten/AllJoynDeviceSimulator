@@ -78,5 +78,37 @@
 				</DataTemplate>
 			</GridView.ItemTemplate>
 		</GridView>
+
+		<Button Content="Add Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click" />
+
+		<Grid x:Name="AddBulbWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed">
+
+			<Grid VerticalAlignment="Center" Background="White" Padding="20"
+				  RequestedTheme="Light">
+				<Grid MaxWidth="400" HorizontalAlignment="Center">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1*" />
+						<ColumnDefinition Width="1*" />
+					</Grid.ColumnDefinitions>
+
+					<TextBlock Text="Name:" VerticalAlignment="Center" />
+					<TextBox x:Name="bulbName" Text="Bulb 5" Grid.Column="1" Width="200" />
+					<ToggleSwitch x:Name="switchColor" Header="Supports Color" Grid.Row="1" IsOn="True" />
+					<ToggleSwitch x:Name="switchTemperature" Header="Supports Temperature" Grid.Row="2" IsOn="True" />
+					<ToggleSwitch x:Name="switchDimming" Header="Supports Dimming" Grid.Row="1" Grid.Column="1" IsOn="True" />
+					<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+						<Button Content="OK" Width="80" Click="Button_Click_OK" />
+						<Button Content="Cancel" Width="80" Margin="20,0,0,0" Click="Button_Click_Cancel" />
+					</StackPanel>
+
+				</Grid>
+			</Grid>
+		</Grid>
 	</Grid>
 </Page>
