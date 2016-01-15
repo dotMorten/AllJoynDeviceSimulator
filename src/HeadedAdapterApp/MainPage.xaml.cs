@@ -27,99 +27,61 @@ namespace AllJoynSimulatorApp
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public DsbBridge dsbBridge
-        {
-            get; private set;
-        }
-
-        public Task startupTask
-        {
-            get; private set;
-        }
 
         public MainPage()
         {
             this.InitializeComponent();
-            Initialize();
             CheckBridgeStatus();
         }
-        Adapter adapter;
-        public void Initialize()
-        {
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            startupTask = ThreadPool.RunAsync(new WorkItemHandler((IAsyncAction action) =>
-            {
-                try
-                {
-                    adapter = new Adapter();
-                    dsbBridge = new DsbBridge(adapter);
-
-                    var initResult = dsbBridge.Initialize();
-                    if (initResult != 0)
-                    {
-                        throw new Exception("DSB Bridge initialization failed!");
-                    }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            })).AsTask();
-
-        }
         private async void CheckBridgeStatus()
         {
             status.Text = "Starting up bridge...";
             try
             {
-                await startupTask;
+                await AllJoynDeviceManager.Current.StartupTask;
                 status.Text = "Bridge Successfully Initialized";
             }
             catch(System.Exception ex)
             {
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
+                return;
             }
 
             var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color+Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
-            Bulbs.Add(bulb);
+            AllJoynDeviceManager.Current.AddBulb(bulb);
             bulb = new MockLightingServiceHandler($"Mock Dimmable+Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
-            Bulbs.Add(bulb);
+            AllJoynDeviceManager.Current.AddBulb(bulb);
             bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
-            Bulbs.Add(bulb);
+            AllJoynDeviceManager.Current.AddBulb(bulb);
             bulb = new MockLightingServiceHandler($"Mock Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
-            Bulbs.Add(bulb);
+            AllJoynDeviceManager.Current.AddBulb(bulb);
 
-            foreach (var b in Bulbs)
+            foreach (var b in AllJoynDeviceManager.Current.Bulbs)
             {
                 b.LampState_Hue = 0;
                 b.LampState_Brightness = UInt32.MaxValue;
                 b.LampState_Saturation = b.LampDetails_Color ? UInt32.MaxValue : 0;
                 b.LampState_OnOff = true;
-                adapter.AddBulb(b);
             }
-            this.DataContext = Bulbs;
+            this.DataContext = AllJoynDeviceManager.Current;
         }
-
-        public ObservableCollection<MockLightingServiceHandler> Bulbs { get; set; } = new ObservableCollection<MockLightingServiceHandler>();
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AddBulbWindow.Visibility = Visibility.Visible;
-            bulbName.Text = string.Format("Mock Bulb {0}", Bulbs.Count + 1);
+            bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDeviceManager.Current.Bulbs.Count() + 1);
         }
 
         private void Button_Click_OK(object sender, RoutedEventArgs e)
         {
             var bulb = new MockLightingServiceHandler(bulbName.Text, Guid.NewGuid().ToString(),
                 switchDimming.IsOn, switchColor.IsOn, switchTemperature.IsOn, this.Dispatcher);
-            Bulbs.Add(bulb);
-
             bulb.LampState_Hue = 0;
             bulb.LampState_Brightness = UInt32.MaxValue;
             bulb.LampState_Saturation = bulb.LampDetails_Color ? UInt32.MaxValue : 0;
             bulb.LampState_OnOff = true;
-            adapter.AddBulb(bulb);
+            AllJoynDeviceManager.Current.AddBulb(bulb);
             Button_Click_Cancel(sender, e);
         }
 

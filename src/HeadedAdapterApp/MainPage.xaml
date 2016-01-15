@@ -3,11 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AllJoynSimulatorApp"
+	xmlns:deviceViews="using:AllJoynSimulatorApp.DeviceViews"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 	<Page.Resources>
-		<local:BoolToVisibilityConverter x:Name="boolConv" />
 	</Page.Resources>
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -19,62 +19,10 @@
 				   x:Name="status" FontSize="24" TextWrapping="Wrap"
 				   Margin="20"/>
 
-		<GridView ItemsSource="{x:Bind Bulbs}" Grid.Row="1">
+		<GridView ItemsSource="{Binding Bulbs}" Grid.Row="1">
 			<GridView.ItemTemplate>
 				<DataTemplate>
-					<Grid>
-						<StackPanel 
-								BorderBrush="White" Margin="10" Padding="10" BorderThickness="1" Width="400">
-							<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Hue: " />
-							<TextBlock Text="{Binding LampState_Hue}" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Brightness: " />
-							<TextBlock Text="{Binding LampState_Brightness}" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Saturation: " />
-							<TextBlock Text="{Binding LampState_Saturation}" />
-						</StackPanel>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Temp: " />
-							<TextBlock Text="{Binding LampState_ColorTemp}" />
-						</StackPanel>
-						<ToggleSwitch IsOn="{Binding LampState_OnOff}" IsEnabled="False" />
-
-					</StackPanel>
-						<Grid HorizontalAlignment="Right" VerticalAlignment="Bottom"
-									Width="100" Height="100">
-							<Border Opacity="1"
-									Width="100" Height="100"
-									HorizontalAlignment="Center"
-									Margin="0,-50,20,20"
-									Visibility="{Binding LampState_OnOff, Converter={StaticResource boolConv}}">
-								<Border.Background>
-									<SolidColorBrush Color="{Binding Color}" />
-								</Border.Background>
-								<Image Source="ms-appx:///fade-to-black.png" />
-							</Border>
-							<StackPanel Margin="0,0,20,0">
-								<Path Width="35.3333" Height="35" Stretch="Fill" StrokeThickness="0.5" 
-									Data="M 38,17.4167C 44.9956,17.4167 50.6667,23.4422 50.6667,30.875C 50.6667,35.8565 44.3333,40.7324 44.3333,42.5329L 44.3333,47.5L 31.6667,45.9167L 31.6667,42.5329C 31.6667,41.1667 25.3333,35.8565 25.3333,30.875C 25.3333,23.4422 31.0044,17.4167 38,17.4167 Z">
-									<Path.Stroke>
-										<SolidColorBrush Color="{Binding ColorFullBrightness}" />
-									</Path.Stroke>
-									<Path.Fill>
-										<SolidColorBrush Color="{Binding Color}" />
-									</Path.Fill>
-								</Path>
-								<Path Width="18" Height="22.75" Stretch="Fill"
-									  Fill="#FFFFFFFF" Data="F1 M 34.8333,60.1667L 34.8333,57.3958L 41.1667,58.5833L 41.1667,60.1667L 34.8333,60.1667 Z 
-									  M 31.6666,55.0209L 31.6666,52.25L 44.3333,53.8334L 44.3333,56.6042L 31.6666,55.0209 Z 
-									  M 44.3333,51.8542L 31.6666,50.2709L 31.6666,47.5L 44.3333,49.0834L 44.3333,51.8542 Z "/>
-							</StackPanel>
-						</Grid>
-
-					</Grid>
+					<deviceViews:LightBulbView DataContext="{Binding}" />
 				</DataTemplate>
 			</GridView.ItemTemplate>
 		</GridView>
