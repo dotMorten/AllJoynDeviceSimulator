@@ -9,6 +9,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.System.Threading;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -18,13 +19,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace AllJoynSimulatorApp
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
 
@@ -40,34 +36,56 @@ namespace AllJoynSimulatorApp
             try
             {
                 await AllJoynDeviceManager.Current.StartupTask;
-                status.Text = "Bridge Successfully Initialized";
+                status.Text = ""; // Bridge Successfully Initialized
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
                 return;
             }
 
-            var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color+Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
-            AllJoynDeviceManager.Current.AddBulb(bulb);
-            bulb = new MockLightingServiceHandler($"Mock Dimmable+Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
-            AllJoynDeviceManager.Current.AddBulb(bulb);
-            bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
-            AllJoynDeviceManager.Current.AddBulb(bulb);
-            bulb = new MockLightingServiceHandler($"Mock Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
-            AllJoynDeviceManager.Current.AddBulb(bulb);
-
-            foreach (var b in AllJoynDeviceManager.Current.Bulbs)
+            LoadBulbs();
+        }
+        private void LoadBulbs()
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            if (!settings.Containers.ContainsKey("Bulbs"))
             {
-                b.LampState_Hue = 0;
-                b.LampState_Brightness = UInt32.MaxValue;
-                b.LampState_Saturation = b.LampDetails_Color ? UInt32.MaxValue : 0;
-                b.LampState_OnOff = true;
+                // Create a set of initial bulbs
+                var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color+Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
+                AllJoynDeviceManager.Current.AddBulb(bulb);
+                bulb = new MockLightingServiceHandler($"Mock Dimmable+Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
+                AllJoynDeviceManager.Current.AddBulb(bulb);
+                bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
+                AllJoynDeviceManager.Current.AddBulb(bulb);
+                bulb = new MockLightingServiceHandler($"Mock Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
+                AllJoynDeviceManager.Current.AddBulb(bulb);
             }
+            else
+            {
+                var container = settings.Containers["Bulbs"];
+                foreach(var item in container.Values)
+                {
+                    var bulb = MockLightingServiceHandler.FromJson((string)item.Value, Dispatcher);
+                    AllJoynDeviceManager.Current.AddBulb(bulb);
+                }
+            }
+
             this.DataContext = AllJoynDeviceManager.Current;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SaveBulbs()
+        {
+            var container = ApplicationData.Current.LocalSettings.CreateContainer("Bulbs", ApplicationDataCreateDisposition.Always);
+            container.Values.Clear();
+            int i = 0;
+            foreach(var b in AllJoynDeviceManager.Current.Bulbs)
+            {
+                container.Values[i++.ToString("0000")] = b.ToJson();
+            }
+        }
+
+        private void Button_Click_AddBulb(object sender, RoutedEventArgs e)
         {
             AddBulbWindow.Visibility = Visibility.Visible;
             bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDeviceManager.Current.Bulbs.Count() + 1);
@@ -82,12 +100,20 @@ namespace AllJoynSimulatorApp
             bulb.LampState_Saturation = bulb.LampDetails_Color ? UInt32.MaxValue : 0;
             bulb.LampState_OnOff = true;
             AllJoynDeviceManager.Current.AddBulb(bulb);
+            SaveBulbs();
             Button_Click_Cancel(sender, e);
         }
 
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
             AddBulbWindow.Visibility = Visibility.Collapsed;
+        }
+
+        private void Delete_Item_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var bulb = (sender as FrameworkElement).DataContext as MockLightingServiceHandler;
+            AllJoynDeviceManager.Current.RemoveBulb(bulb);
+            SaveBulbs();
         }
     }
 }

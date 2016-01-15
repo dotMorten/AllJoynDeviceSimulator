@@ -27,7 +27,10 @@ using BridgeRT;
 using Q42.HueApi;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 
 // This class implements the AllJoyn Lighting Service Framework for the Hue Bulbs
@@ -64,6 +67,7 @@ namespace AdapterLib
             LampDetails_Wattage = 7;
             if (!supportsColor) saturation = 0;
         }
+        [DataMember]
         public bool LampDetails_Color
         {
             get; private set;
@@ -198,7 +202,7 @@ namespace AdapterLib
             }
         }
 
-        bool OnOff;
+        private bool OnOff = true;
         public bool LampState_OnOff
         {
             get
@@ -471,5 +475,49 @@ namespace AdapterLib
                     return Windows.UI.Color.FromArgb(255, iMax, iMid, iMin);
             }
         }
+
+        [DataContract]
+        private class SerializerClass
+        {
+            [DataMember]
+            public string Id { get; set; }
+            [DataMember]
+            public string Name { get; set; }
+            [DataMember]
+            public bool IsDimmable { get; set; }
+            [DataMember]
+            public bool SupportsColor { get; set; }
+            [DataMember]
+            public bool SupportsTemperature { get; set; }
+        }
+
+        public string ToJson()
+        {
+            DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(SerializerClass));
+            var sc = new SerializerClass()
+            {
+                Id = this.Id,
+                Name = Name,
+                IsDimmable = LampDetails_Dimmable,
+                SupportsColor = LampDetails_Color,
+                SupportsTemperature = LampDetails_VariableColorTemp
+            };
+            using (MemoryStream ms = new MemoryStream())
+            {
+                s.WriteObject(ms, sc);
+                return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+            }
+        }
+        public static MockLightingServiceHandler FromJson(string json, Windows.UI.Core.CoreDispatcher dispatcher)
+        {
+            DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(SerializerClass));
+            using (MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
+            {
+                var sc = (SerializerClass)s.ReadObject(ms);
+                return new MockLightingServiceHandler(sc.Name, sc.Id, sc.IsDimmable, sc.SupportsColor, sc.SupportsTemperature, dispatcher);
+            }
+        }
+
+
     }
 }

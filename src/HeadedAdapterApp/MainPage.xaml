@@ -19,15 +19,22 @@
 				   x:Name="status" FontSize="24" TextWrapping="Wrap"
 				   Margin="20"/>
 
-		<GridView ItemsSource="{Binding Bulbs}" Grid.Row="1">
+		<GridView ItemsSource="{Binding Bulbs}" Grid.Row="1" IsItemClickEnabled="False" IsRightTapEnabled="False" IsSwipeEnabled="False" IsTapEnabled="False">
 			<GridView.ItemTemplate>
 				<DataTemplate>
-					<deviceViews:LightBulbView DataContext="{Binding}" />
+					<Grid>
+						<deviceViews:LightBulbView DataContext="{Binding}" />
+						<SymbolIcon Symbol="Delete"
+									Tapped="Delete_Item_Tapped"
+									HorizontalAlignment="Right" VerticalAlignment="Top"
+									Margin="20"
+									/>
+					</Grid>
 				</DataTemplate>
 			</GridView.ItemTemplate>
 		</GridView>
 
-		<Button Content="Add Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click" />
+		<Button Content="Add Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click_AddBulb" />
 
 		<Grid x:Name="AddBulbWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed">
 
