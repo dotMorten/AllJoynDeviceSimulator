@@ -21,7 +21,7 @@ using BridgeRT;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
-namespace HeadedAdapterApp
+namespace AllJoynSimulatorApp
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.

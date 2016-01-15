@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace HeadedAdapterApp
+namespace AllJoynSimulatorApp
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{31EB47F3-5810-4439-AB31-99559965C58B}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HeadedAdapterApp</RootNamespace>
-    <AssemblyName>HeadedAdapterApp</AssemblyName>
+    <RootNamespace>AllJoynSimulatorApp</RootNamespace>
+    <AssemblyName>AllJoynSimulatorApp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -17,7 +17,7 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>HeadedAdapterApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>AllJoynSimulatorApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackage>true</AppxPackage>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -105,7 +105,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="HeadedAdapterApp_TemporaryKey.pfx" />
+    <None Include="AllJoynSimulatorApp_TemporaryKey.pfx" />
     <None Include="project.json">
       <SubType>Designer</SubType>
     </None>
