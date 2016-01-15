@@ -28,6 +28,5 @@
   </Applications>
   <Capabilities>
     <Capability Name="allJoyn" />
-    <Capability Name="privateNetworkClientServer" />
   </Capabilities>
 </Package>
