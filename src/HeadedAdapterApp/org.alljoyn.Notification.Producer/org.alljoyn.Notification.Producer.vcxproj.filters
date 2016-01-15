@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>578ffe08-b78f-4a1c-a712-c256b1303389</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="AllJoynBusObjectManager.cpp" />
+    <ClCompile Include="AllJoynHelpers.cpp" />
+    <ClCompile Include="ProducerConsumer.cpp" />
+    <ClCompile Include="ProducerProducer.cpp" />
+    <ClCompile Include="ProducerServiceEventAdapter.cpp" />
+    <ClCompile Include="ProducerServiceEventArgs.cpp" />
+    <ClCompile Include="ProducerSignals.cpp" />
+    <ClCompile Include="ProducerWatcher.cpp" />
+    <ClCompile Include="TypeConversionHelpers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="AllJoynBusObjectManager.h" />
+    <ClInclude Include="AllJoynHelpers.h" />
+    <ClInclude Include="IProducerService.h" />
+    <ClInclude Include="ProducerConsumer.h" />
+    <ClInclude Include="ProducerEventArgs.h" />
+    <ClInclude Include="ProducerMethodResults.h" />
+    <ClInclude Include="ProducerProducer.h" />
+    <ClInclude Include="ProducerServiceEventAdapter.h" />
+    <ClInclude Include="ProducerServiceEventArgs.h" />
+    <ClInclude Include="ProducerSignals.h" />
+    <ClInclude Include="ProducerStructures.h" />
+    <ClInclude Include="ProducerWatcher.h" />
+    <ClInclude Include="TypeConversionHelpers.h" />
+  </ItemGroup>
+</Project>

@@ -43,9 +43,16 @@ namespace AllJoynSimulatorApp
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
                 return;
             }
-
+            AllJoynDeviceManager.Current.NotificationRecieved += Current_NotificationRecieved;
             LoadBulbs();
         }
+
+        private void Current_NotificationRecieved(object sender, AllJoynDeviceManager.NotificationEventArgs e)
+        {
+            //TODO
+            //System.Diagnostics.Debugger.Break();
+        }
+
         private void LoadBulbs()
         {
             var settings = ApplicationData.Current.LocalSettings;
