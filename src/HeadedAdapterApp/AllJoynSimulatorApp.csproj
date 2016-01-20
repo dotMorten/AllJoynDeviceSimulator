@@ -17,10 +17,14 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>AllJoynSimulatorApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>AllJoynSimulatorApp_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxPackage>true</AppxPackage>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <PackageCertificateThumbprint>E445ABEDFC4D5AA1427D9E0667CEAAB8FD00B5BE</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -108,6 +112,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="AllJoynSimulatorApp_StoreKey.pfx" />
     <None Include="AllJoynSimulatorApp_TemporaryKey.pfx" />
     <None Include="project.json">
       <SubType>Designer</SubType>
@@ -122,6 +127,7 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="fade-to-black.png" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
