@@ -41,6 +41,7 @@
 			</ItemsControl>
 		</ScrollViewer>
 		<Button Content="Add New Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click_AddBulb" />
+		<Button Content="Help" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Click="Button_Click_Help" />
 
 		<Grid x:Name="AddBulbWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed">
 

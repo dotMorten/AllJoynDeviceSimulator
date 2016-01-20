@@ -522,6 +522,16 @@ namespace AdapterLib
             public bool SupportsColor { get; set; }
             [DataMember]
             public bool SupportsTemperature { get; set; }
+            [DataMember]
+            public UInt32 Hue { get; set; }
+            [DataMember]
+            public UInt32 Saturation { get; set; }
+            [DataMember]
+            public UInt32 Brightness { get; set; }
+            [DataMember]
+            public UInt32 ColorTemp { get; set; }
+            [DataMember]
+            public bool IsOn { get; set; }
         }
 
         public string ToJson()
@@ -533,7 +543,12 @@ namespace AdapterLib
                 Name = Name,
                 IsDimmable = LampDetails_Dimmable,
                 SupportsColor = LampDetails_Color,
-                SupportsTemperature = LampDetails_VariableColorTemp
+                SupportsTemperature = LampDetails_VariableColorTemp,
+                Hue = LampState_Hue,
+                Saturation = LampState_Saturation,
+                Brightness = LampState_Brightness,
+                ColorTemp = LampState_ColorTemp,
+                IsOn = LampState_OnOff,
             };
             using (MemoryStream ms = new MemoryStream())
             {
@@ -547,10 +562,14 @@ namespace AdapterLib
             using (MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
             {
                 var sc = (SerializerClass)s.ReadObject(ms);
-                return new MockLightingServiceHandler(sc.Name, sc.Id, sc.IsDimmable, sc.SupportsColor, sc.SupportsTemperature, dispatcher);
+                var mlsh = new MockLightingServiceHandler(sc.Name, sc.Id, sc.IsDimmable, sc.SupportsColor, sc.SupportsTemperature, dispatcher);
+                mlsh.LampState_Hue = sc.Hue;
+                mlsh.LampState_Brightness = sc.Brightness;
+                mlsh.LampState_Saturation = sc.Saturation;
+                mlsh.LampState_ColorTemp= sc.ColorTemp;
+                mlsh.LampState_OnOff = sc.IsOn;
+                return mlsh;
             }
         }
-
-
     }
 }

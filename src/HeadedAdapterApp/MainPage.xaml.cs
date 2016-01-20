@@ -28,6 +28,13 @@ namespace AllJoynSimulatorApp
         {
             this.InitializeComponent();
             CheckBridgeStatus();
+            App.Current.Suspending += Current_Suspending;
+        }
+
+        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            if(this.DataContext != null)
+                SaveBulbs();
         }
 
         private async void CheckBridgeStatus()
@@ -124,5 +131,9 @@ namespace AllJoynSimulatorApp
             SaveBulbs();
         }
 
+        private void Button_Click_Help(object sender, RoutedEventArgs e)
+        {
+            var _ = Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/dotMorten/AllJoynDeviceSimulator/wiki/Help"));
+        }
     }
 }
