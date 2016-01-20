@@ -116,11 +116,12 @@ namespace AllJoynSimulatorApp
             AddBulbWindow.Visibility = Visibility.Collapsed;
         }
 
-        private void Delete_Item_Tapped(object sender, TappedRoutedEventArgs e)
+        private void Delete_Item_Tapped(object sender, RoutedEventArgs e)
         {
             var bulb = (sender as FrameworkElement).DataContext as MockLightingServiceHandler;
             AllJoynDeviceManager.Current.RemoveBulb(bulb);
             SaveBulbs();
         }
+
     }
 }

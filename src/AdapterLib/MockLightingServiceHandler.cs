@@ -58,7 +58,8 @@ namespace AdapterLib
             LampDetails_MaxLumens = 1000;
             LampDetails_MaxTemperature = (uint)(supportsTemperature ? 9000 : 2800);
             LampDetails_MaxVoltage = 120;
-            colorTemp = LampDetails_MinTemperature = 2800;
+            LampDetails_MinTemperature = 2800;
+            colorTemp = kelvinToUInt(LampDetails_MinTemperature);
             LampDetails_MinVoltage = 100;
             LampDetails_Model = 1;
             LampDetails_Type = (uint)AdapterLib.LsfEnums.DeviceType.TYPE_LAMP;
@@ -137,7 +138,12 @@ namespace AdapterLib
                 }
             }
         }
-        private uint colorTemp = 2800;
+        private static UInt32 kelvinToUInt(double kelvin)
+        {
+            return (UInt32)((kelvin - 1000) / 19000 * (UInt32.MaxValue - 1));
+        }
+        private uint colorTemp = kelvinToUInt(2800);
+
         public uint LampState_ColorTemp
         {
             get
@@ -149,6 +155,10 @@ namespace AdapterLib
             {
                 if (LampDetails_VariableColorTemp)
                 {
+                    if (value > kelvinToUInt(LampDetails_MaxTemperature))
+                        value = kelvinToUInt(LampDetails_MaxTemperature);
+                    else if(value < kelvinToUInt(LampDetails_MinTemperature))
+                        value = kelvinToUInt(LampDetails_MinTemperature);
                     colorTemp = value;
                     OnPropertyChanged();
                 }
@@ -289,10 +299,23 @@ namespace AdapterLib
             LampResponseCode = 0;
             return 0; //TODO
         }
+        System.Threading.CancellationTokenSource transitionCancellation;
+        private object transitionLock = new object();
         private async void TransitionLampStateAsync(ulong Timestamp, BridgeRT.State NewState, uint TransitionPeriod)
         {
             if (Timestamp > 0)
                 await Task.Delay((int)Timestamp);
+            System.Threading.CancellationToken token = System.Threading.CancellationToken.None;
+            lock (transitionLock)
+            {
+                if (transitionCancellation != null)
+                {
+                    //Cancel any ongoing transitions
+                    transitionCancellation.Cancel();
+                }
+                transitionCancellation = new System.Threading.CancellationTokenSource();
+                token = transitionCancellation.Token;
+            }
             var steps = Math.Floor(30d / (1000d / TransitionPeriod));
             var stepdelay = TransitionPeriod / steps;
             var startHue = LampState_Hue;
@@ -301,35 +324,45 @@ namespace AdapterLib
             var startTemp = LampState_ColorTemp;
             if (NewState.IsOn.HasValue && NewState.IsOn.Value)
                 LampState_OnOff = true;
-            for (int i = 0; i < steps; i++)
+            if(NewState.ColorTemp.HasValue && LampDetails_VariableColorTemp)
+            {
+                //Clip to supported temperatures
+                if (NewState.ColorTemp.Value > kelvinToUInt(LampDetails_MaxTemperature))
+                    NewState.ColorTemp = kelvinToUInt(LampDetails_MaxTemperature);
+                else if (NewState.ColorTemp.Value < kelvinToUInt(LampDetails_MinTemperature))
+                    NewState.ColorTemp = kelvinToUInt(LampDetails_MinTemperature);
+            }
+            for (int i = 1; i < steps; i++)
             {
                 if(NewState.Hue.HasValue && LampDetails_Color)
                 {
-                    var inc = (NewState.Hue.Value - startHue) / steps;
+                    var inc = (NewState.Hue.Value - (double)startHue) / steps;
                     this.hue = (uint)(startHue + inc * i);
                     OnPropertyChanged(nameof(LampState_Hue));
                 }
                 if (NewState.Brightness.HasValue && LampDetails_Dimmable)
                 {
-                    var inc = (NewState.Brightness.Value - startBrightness) / steps;
+                    var inc = (NewState.Brightness.Value - (double)startBrightness) / steps;
                     this.brightness = (uint)(startBrightness + inc * i);
                     OnPropertyChanged(nameof(LampState_Brightness));
                 }
                 if (NewState.Saturation.HasValue && LampDetails_Color)
                 {
-                    var inc = (NewState.Saturation.Value - startSaturation) / steps;
+                    var inc = (NewState.Saturation.Value - (double)startSaturation) / steps;
                     this.saturation = (uint)(startSaturation + inc * i);
                     OnPropertyChanged(nameof(LampState_Saturation));
                 }
                 if (NewState.ColorTemp.HasValue && LampDetails_VariableColorTemp)
                 {
-                    var inc = (NewState.ColorTemp.Value - startTemp) / steps;
+                    var inc = (NewState.ColorTemp.Value - (double)startTemp) / steps;
                     this.colorTemp = (uint)(startTemp + inc * i);
                     OnPropertyChanged(nameof(LampState_ColorTemp));
                 }
                 OnPropertyChanged(nameof(Color));
                 OnPropertyChanged(nameof(ColorFullBrightness));
                 await Task.Delay((int)stepdelay);
+                if (token.IsCancellationRequested)
+                    return;
             }
             if (NewState.Hue.HasValue && LampDetails_Color)
             {

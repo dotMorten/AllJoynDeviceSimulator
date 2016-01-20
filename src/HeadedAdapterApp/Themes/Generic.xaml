@@ -5,6 +5,9 @@
 	xmlns:deviceViews="using:AllJoynSimulatorApp.DeviceViews"
 	>
 	<local:BoolToVisibilityConverter x:Name="boolConv" />
+	<local:RangeToPercentageConverter x:Name="rangeConv" />
+	<local:HueToDegreesConverter x:Name="hueConv" />
+	<local:UIntToKelvinConverter x:Name="kelvinConv" />
 
 	<Style TargetType="deviceViews:LightBulbView" >
         <Setter Property="Template">
@@ -14,21 +17,21 @@
 						<StackPanel 
 								BorderBrush="White" Margin="10" Padding="10" BorderThickness="1" Width="400">
 							<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
-							<StackPanel Orientation="Horizontal">
+							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Hue}">
 								<TextBlock Text="Hue: " />
-								<TextBlock Text="{Binding LampState_Hue}" />
+								<TextBlock Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" />
 							</StackPanel>
-							<StackPanel Orientation="Horizontal">
+							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Brightness}">
 								<TextBlock Text="Brightness: " />
-								<TextBlock Text="{Binding LampState_Brightness}" />
+								<TextBlock Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" />
 							</StackPanel>
-							<StackPanel Orientation="Horizontal">
+							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Saturation}">
 								<TextBlock Text="Saturation: " />
-								<TextBlock Text="{Binding LampState_Saturation}" />
+								<TextBlock Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" />
 							</StackPanel>
-							<StackPanel Orientation="Horizontal">
+							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_ColorTemp}">
 								<TextBlock Text="Temp: " />
-								<TextBlock Text="{Binding LampState_ColorTemp}" />
+								<TextBlock Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}" />
 							</StackPanel>
 							<ToggleSwitch IsOn="{Binding LampState_OnOff}" IsEnabled="False" />
 
