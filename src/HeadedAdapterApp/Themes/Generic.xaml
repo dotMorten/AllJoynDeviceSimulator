@@ -13,42 +13,25 @@
         <Setter Property="Template">
             <Setter.Value>
 				<ControlTemplate TargetType="deviceViews:LightBulbView">
-					<Grid>
-						<StackPanel 
-								BorderBrush="White" Margin="10" Padding="10" BorderThickness="1" Width="400">
-							<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
-							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Hue}">
-								<TextBlock Text="Hue: " />
-								<TextBlock Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" />
-							</StackPanel>
-							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Brightness}">
-								<TextBlock Text="Brightness: " />
-								<TextBlock Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" />
-							</StackPanel>
-							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_Saturation}">
-								<TextBlock Text="Saturation: " />
-								<TextBlock Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" />
-							</StackPanel>
-							<StackPanel Orientation="Horizontal" ToolTipService.ToolTip="{Binding LampState_ColorTemp}">
-								<TextBlock Text="Temp: " />
-								<TextBlock Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}" />
-							</StackPanel>
-							<ToggleSwitch IsOn="{Binding LampState_OnOff}" IsEnabled="False" />
-
-						</StackPanel>
+					<Grid RequestedTheme="Dark" Margin="10" Padding="10" Height="160"
+						  Background="Black" BorderBrush="#555555" BorderThickness="1" Width="400">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
 						<Grid HorizontalAlignment="Right" VerticalAlignment="Bottom"
-									Width="100" Height="100">
+									Width="100" Height="100" Grid.RowSpan="2" >
 							<Border Opacity="1"
 									Width="100" Height="100"
 									HorizontalAlignment="Center"
-									Margin="0,-50,20,20"
+									Margin="0,-10,0,20"
 									Visibility="{Binding LampState_OnOff, Converter={StaticResource boolConv}}">
 								<Border.Background>
 									<SolidColorBrush Color="{Binding Color}" />
 								</Border.Background>
 								<Image Source="ms-appx:///fade-to-black.png" />
 							</Border>
-							<StackPanel Margin="0,0,20,0">
+							<StackPanel Margin="0,30,0,0">
 								<Path Width="35.3333" Height="35" Stretch="Fill" StrokeThickness="0.5" 
 									Data="M 38,17.4167C 44.9956,17.4167 50.6667,23.4422 50.6667,30.875C 50.6667,35.8565 44.3333,40.7324 44.3333,42.5329L 44.3333,47.5L 31.6667,45.9167L 31.6667,42.5329C 31.6667,41.1667 25.3333,35.8565 25.3333,30.875C 25.3333,23.4422 31.0044,17.4167 38,17.4167 Z">
 									<Path.Stroke>
@@ -63,6 +46,32 @@
 									  M 31.6666,55.0209L 31.6666,52.25L 44.3333,53.8334L 44.3333,56.6042L 31.6666,55.0209 Z 
 									  M 44.3333,51.8542L 31.6666,50.2709L 31.6666,47.5L 44.3333,49.0834L 44.3333,51.8542 Z "/>
 							</StackPanel>
+						</Grid>
+						<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
+						<Grid Grid.Row="1">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+						
+							<TextBlock Grid.Row="0" Grid.Column="0"  Text="Hue: "/>
+							<TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" ToolTipService.ToolTip="{Binding LampState_Hue}"/>
+							<TextBlock Grid.Row="1" Grid.Column="0"  Text="Brightness: " />
+							<TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}"  ToolTipService.ToolTip="{Binding LampState_Brightness}"/>
+							<TextBlock Grid.Row="2" Grid.Column="0"  Text="Saturation: " />
+							<TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" ToolTipService.ToolTip="{Binding LampState_Saturation}" />
+							<TextBlock Grid.Row="3" Grid.Column="0"  Text="Temp: " />
+							<TextBlock Grid.Row="3" Grid.Column="1"  Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}" ToolTipService.ToolTip="{Binding LampState_ColorTemp}" />
+							
+							<ToggleSwitch Grid.Row="4" Grid.ColumnSpan="2"  IsOn="{Binding LampState_OnOff}" IsEnabled="False" />
+
 						</Grid>
 
 					</Grid>
