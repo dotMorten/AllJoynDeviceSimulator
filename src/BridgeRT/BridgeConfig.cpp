@@ -16,6 +16,7 @@
 
 #include "pch.h"
 #include "BridgeConfig.h"
+#include "BridgeUtils.h"
 
 #pragma warning(disable:4127)
 
@@ -229,35 +230,35 @@ BridgeConfig::ToFile(String^ pFileName)
     }
 
     // Save/Update the configuration file
-    //try
-    //{
-    //    createConfigFileTask = create_task(appFolder->CreateFileAsync(
-    //        m_fileName,
-    //        CreationCollisionOption::ReplaceExisting));
-    //}
-    //catch (Platform::Exception^ ex)
-    //{
-    //    hr = ex->HResult;
-    //    goto CleanUp;
-    //}
+    try
+    {
+        createConfigFileTask = create_task(appFolder->CreateFileAsync(
+            m_fileName,
+            CreationCollisionOption::ReplaceExisting));
+    }
+    catch (Platform::Exception^ ex)
+    {
+        hr = ex->HResult;
+        goto CleanUp;
+    }
 
-    //createConfigFileTask
-    //    .then([this](StorageFile^ sFile)
-    //{
-    //    return m_pXmlDocument->SaveToFileAsync(sFile);
-    //})
-    //    .then([&](task<void> checkExceptionTask)
-    //{
-    //    try
-    //    {
-    //        checkExceptionTask.get();
-    //    }
-    //    catch (Platform::Exception^ ex)
-    //    {
-    //        hr = ex->HResult;
-    //    }
-    //})
-    //    .wait();
+    createConfigFileTask
+        .then([this](StorageFile^ sFile)
+    {
+        return m_pXmlDocument->SaveToFileAsync(sFile);
+    })
+        .then([&](task<void> checkExceptionTask)
+    {
+        try
+        {
+            checkExceptionTask.get();
+        }
+        catch (Platform::Exception^ ex)
+        {
+            hr = ex->HResult;
+        }
+    })
+        .wait();
 
 CleanUp:
     return hr;

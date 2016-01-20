@@ -1,5 +1,5 @@
 ﻿/*  
-* AllJoyn Device Service Bridge for Philips Hue
+* AllJoyn Device Service Bridge for Mocked lights
 *  
 * Copyright (c) Morten Nielsen
 * All rights reserved.  
@@ -65,7 +65,7 @@ namespace AdapterLib
             Windows.ApplicationModel.PackageVersion versionFromPkg = packageId.Version;
 
             this.Vendor = "Morten Nielsen";
-            this.AdapterName = "Philips Hue DSB";
+            this.AdapterName = "Device Simulator DSB";
 
             // the adapter prefix must be something like "com.mycompany" (only alpha num and dots)
             // it is used by the Device System Bridge as root string for all services and interfaces it exposes
@@ -82,7 +82,7 @@ namespace AdapterLib
             }
             else
             {
-                this.ExposedApplicationName = "PhilipsHueDeviceSystemBridge";
+                this.ExposedApplicationName = "SimulatorDeviceSystemBridge";
                 this.Version = "0.0.0.0";
             }
 

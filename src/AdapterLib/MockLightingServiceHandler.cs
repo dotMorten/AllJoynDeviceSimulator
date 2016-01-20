@@ -1,5 +1,5 @@
 ﻿/*  
-* AllJoyn Device Service Bridge for Philips Hue
+* AllJoyn Device Service Bridge for Mocked lights
 *  
 * Copyright (c) Morten Nielsen
 * All rights reserved.  

@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "org.alljoyn.Notification.Di
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "org.alljoyn.Notification.Producer", "org.alljoyn.Notification.Producer\org.alljoyn.Notification.Producer.vcxproj", "{BE167DB2-22D1-4299-9219-525E4C45942D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BackgroundHost", "..\BackgroundHost\BackgroundHost.vcxproj", "{98B5350D-3B67-4109-9CD5-1A675295C461}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,20 @@ Global
 		{BE167DB2-22D1-4299-9219-525E4C45942D}.Release|x64.Build.0 = Release|x64
 		{BE167DB2-22D1-4299-9219-525E4C45942D}.Release|x86.ActiveCfg = Release|Win32
 		{BE167DB2-22D1-4299-9219-525E4C45942D}.Release|x86.Build.0 = Release|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|ARM.ActiveCfg = Debug|ARM
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|ARM.Build.0 = Debug|ARM
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|x64.ActiveCfg = Debug|x64
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|x64.Build.0 = Debug|x64
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|x86.ActiveCfg = Debug|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Debug|x86.Build.0 = Debug|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|Any CPU.ActiveCfg = Release|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|ARM.ActiveCfg = Release|ARM
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|ARM.Build.0 = Release|ARM
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|x64.ActiveCfg = Release|x64
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|x64.Build.0 = Release|x64
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|x86.ActiveCfg = Release|Win32
+		{98B5350D-3B67-4109-9CD5-1A675295C461}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,5 +164,6 @@ Global
 		{0F2461F9-FF77-4D9E-B449-66A2AF983EEF} = {955B7E4D-3FED-4289-BACA-398F3324ECA8}
 		{7BD794CA-03BD-4D82-A46E-1B795DD31EAE} = {955B7E4D-3FED-4289-BACA-398F3324ECA8}
 		{BE167DB2-22D1-4299-9219-525E4C45942D} = {955B7E4D-3FED-4289-BACA-398F3324ECA8}
+		{98B5350D-3B67-4109-9CD5-1A675295C461} = {955B7E4D-3FED-4289-BACA-398F3324ECA8}
 	EndGlobalSection
 EndGlobal

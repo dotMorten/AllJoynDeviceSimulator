@@ -17,6 +17,7 @@
 #include "pch.h"
 #include "AllJoynHelper.h"
 #include "DeviceMain.h"
+#include "BridgeUtils.h"
 
 using namespace Platform;
 using namespace Platform::Collections;
@@ -25,7 +26,7 @@ using namespace Windows::Foundation;
 
 using namespace BridgeRT;
 using namespace std;
-using namespace DsbCommon;
+
 
 AllJoynHelper::AllJoynHelper()
 {
@@ -341,7 +342,7 @@ QStatus AllJoynHelper::SetMsgArg(_In_ IAdapterValue ^adapterValue, _Inout_ alljo
 
         status = SetMsgArg(msgArg, signature.c_str(), uintArray);
         break;
-        }
+    }
     case PropertyType::DoubleArray:
     {
         Platform::Array<double>^ doubleArray;
@@ -391,35 +392,35 @@ leave:
 
 template<typename T>
 QStatus AllJoynHelper::SetMsgArg(_Inout_ alljoyn_msgarg msgArg, _In_ const std::string& ajSignature, _In_ Platform::Array<T>^ arrayArg)
-    {
+{
     QStatus status = ER_OK;
 
     T* tempBuffer = nullptr;
 
     if (arrayArg && arrayArg->Length > 0)
-        {
-            size_t i = 0;
+    {
+        size_t i = 0;
         tempBuffer = new (nothrow) T[arrayArg->Length];
 
         for (auto value : arrayArg)
-            {
+        {
             tempBuffer[i] = value;
-                ++i;
-            }
+            ++i;
+        }
 
         status = alljoyn_msgarg_set_and_stabilize(msgArg, ajSignature.c_str(), arrayArg->Length, tempBuffer);
-        }
-        else
-        {
+    }
+    else
+    {
         tempBuffer = new (nothrow) T[1];
-            tempBuffer[0] = 0;
+        tempBuffer[0] = 0;
         status = alljoyn_msgarg_set_and_stabilize(msgArg, ajSignature.c_str(), 1, tempBuffer);
     }
 
     if (tempBuffer)
     {
-            delete [] tempBuffer;
-        }
+        delete[] tempBuffer;
+    }
 
     return status;
 }
@@ -470,7 +471,7 @@ QStatus AllJoynHelper::GetAdapterValue(_Inout_ IAdapterValue ^adapterValue, _In_
         break;
     }
 
-    case PropertyType::Char16:	__fallthrough;
+    case PropertyType::Char16:  __fallthrough;
     case PropertyType::Int16:
     {
         int16 tempVal;
@@ -695,10 +696,10 @@ leave:
 
 template<typename T>
 QStatus AllJoynHelper::GetArrayFromMsgArg(_In_ alljoyn_msgarg msgArg, _In_ const std::string& ajSignature, _Out_ Platform::Array<T>^* arrayArg)
-    {
+{
     QStatus status = ER_OK;
-        alljoyn_msgarg entries;
-        size_t numVals = 0;
+    size_t numVals = 0;
+    T* temp = nullptr;
 
     if (ajSignature.length() != 2 && ajSignature[0] != 'a')
     {
@@ -706,21 +707,15 @@ QStatus AllJoynHelper::GetArrayFromMsgArg(_In_ alljoyn_msgarg msgArg, _In_ const
         goto leave;
     }
 
-    status = alljoyn_msgarg_get(msgArg, ajSignature.c_str(), &numVals, &entries);
-        if (ER_OK == status)
-        {
+    status = alljoyn_msgarg_get(msgArg, ajSignature.c_str(), &numVals, &temp);
+    if (ER_OK == status)
+    {
         *arrayArg = ref new Platform::Array<T>(numVals);
 
-        T temp;
-            for (size_t i = 0; i < numVals; i++)
-            {
-            status = alljoyn_msgarg_get(alljoyn_msgarg_array_element(entries, i), &ajSignature[1], &temp);
-            if (ER_OK != status)
-                {
-                goto leave;
-                }
-            (*arrayArg)[i] = temp;
-            }
+        for (size_t i = 0; i < numVals; i++)
+        {
+            (*arrayArg)[i] = temp[i];
+        }
     }
 
 leave:
@@ -816,7 +811,7 @@ QStatus AllJoynHelper::GetSignature(_In_ PropertyType propertyType, _Out_ std::s
         signature = "y";
         break;
 
-    case PropertyType::Char16:	__fallthrough;
+    case PropertyType::Char16:  __fallthrough;
     case PropertyType::Int16:
         signature = "n";
         break;
