@@ -112,9 +112,24 @@ namespace AdapterLib
 
         public uint LampDetails_Wattage { get; private set; }
 
-        public uint LampParameters_BrightnessLumens { get; private set; }
-
-        public uint LampParameters_EnergyUsageMilliwatts { get; private set; }
+        public uint LampParameters_BrightnessLumens
+        {
+            get
+            {
+                if (!LampState_OnOff)
+                    return 0;
+                return (UInt32)(LampDetails_MaxLumens * ( LampState_Brightness / (double)MaxUIntValue));
+            }
+        }
+        public uint LampParameters_EnergyUsageMilliwatts
+        {
+            get
+            {
+                if (!LampState_OnOff)
+                    return 0;
+                return (UInt32)(LampDetails_Wattage * (LampState_Brightness / (double)MaxUIntValue));
+            }
+        } 
 
         public uint LampParameters_Version { get; private set; }
 
@@ -124,7 +139,8 @@ namespace AdapterLib
 
         public uint LampService_Version { get; private set; }
 
-        private uint brightness = uint.MaxValue;
+        private uint brightness = MaxUIntValue;
+
         public uint LampState_Brightness
         {
             //1..254
@@ -140,7 +156,7 @@ namespace AdapterLib
         }
         private static UInt32 kelvinToUInt(double kelvin)
         {
-            return (UInt32)((kelvin - 1000) / 19000 * (UInt32.MaxValue - 1));
+            return (UInt32)((kelvin - 1000) / 19000 * MaxUIntValue);
         }
         private uint colorTemp = kelvinToUInt(2800);
 
@@ -192,10 +208,16 @@ namespace AdapterLib
             if (dispatcher.HasThreadAccess)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                if (propertyName == "LampState_Hue" ||
-                    propertyName == "LampState_Brightness" ||
-                    propertyName == "LampState_Saturation")
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Color"));
+                if (propertyName == nameof(LampState_Hue) ||
+                    propertyName == nameof(LampState_Brightness) ||
+                    propertyName == nameof(LampState_Saturation))
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Color)));
+                if (propertyName == nameof(LampState_Brightness) ||
+                    propertyName == nameof(LampState_OnOff))
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs((nameof(LampParameters_BrightnessLumens))));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs((nameof(LampParameters_EnergyUsageMilliwatts))));
+                }
             }
             else
             {
@@ -390,17 +412,17 @@ namespace AdapterLib
                 LampState_OnOff = false;
         }
 
-
+        private const uint MaxUIntValue = UInt32.MaxValue - 1;
         public Windows.UI.Color Color
         {
             get
             {
-                var h = (float)(this.hue * 360d / uint.MaxValue);
-                var s = (float)(this.saturation / (double)uint.MaxValue);
+                var h = (float)(this.hue * 360d / MaxUIntValue);
+                var s = (float)(this.saturation / (double)MaxUIntValue);
                 var b = this.brightness;
                 if (!LampDetails_Color) { h = 0; s = 0; }
-                if (!LampDetails_Dimmable) { b = uint.MaxValue; }
-                var brightnessFactor = (this.saturation / (double)UInt32.MaxValue) + 1;
+                if (!LampDetails_Dimmable) { b = MaxUIntValue; }
+                var brightnessFactor = (this.saturation / (double)MaxUIntValue) + 1;
                 var b2 = (float)(b / (double)uint.MaxValue / brightnessFactor);
                 return FromAhsb(h, s, b2);
             }

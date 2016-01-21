@@ -109,10 +109,9 @@ namespace AllJoynSimulatorApp
         {
             var bulb = new MockLightingServiceHandler(bulbName.Text, Guid.NewGuid().ToString(),
                 switchDimming.IsOn, switchColor.IsOn, switchTemperature.IsOn, this.Dispatcher);
-            bulb.LampState_Hue = bulb.LampDetails_Color ? (UInt32)(new Random().Next(int.MaxValue - 1) * 2d) : 0;
-            bulb.LampState_Brightness = UInt32.MaxValue;
-            
-            bulb.LampState_Saturation = bulb.LampDetails_Color ? UInt32.MaxValue : 0;
+            bulb.LampState_Hue = (UInt32)(new Random().NextDouble() * (uint.MaxValue - 1));
+            bulb.LampState_Brightness = UInt32.MaxValue - 1;            
+            bulb.LampState_Saturation = UInt32.MaxValue - 1;
             bulb.LampState_OnOff = true;
             AllJoynDeviceManager.Current.AddBulb(bulb);
             SaveBulbs();
