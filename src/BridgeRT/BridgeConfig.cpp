@@ -213,6 +213,7 @@ HRESULT
 BridgeConfig::ToFile(String^ pFileName)
 {
     HRESULT hr = S_OK;
+	return hr;
     task<StorageFile^> createConfigFileTask;
     StorageFolder^ appFolder = ApplicationData::Current->LocalFolder;
 
