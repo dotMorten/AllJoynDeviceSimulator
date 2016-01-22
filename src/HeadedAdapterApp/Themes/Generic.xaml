@@ -10,11 +10,11 @@
 	<local:UIntToKelvinConverter x:Name="kelvinConv" />
 
 	<Style TargetType="deviceViews:LightBulbView" >
-        <Setter Property="Template">
+		<Setter Property="Template">
             <Setter.Value>
 				<ControlTemplate TargetType="deviceViews:LightBulbView">
 					<Grid RequestedTheme="Dark" Margin="10" Padding="10" Height="160"
-						  Background="Black" BorderBrush="#555555" BorderThickness="1" Width="400">
+						  Background="Black" BorderBrush="#555555" BorderThickness="1">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
@@ -47,7 +47,7 @@
 									  M 44.3333,51.8542L 31.6666,50.2709L 31.6666,47.5L 44.3333,49.0834L 44.3333,51.8542 Z "/>
 							</StackPanel>
 						</Grid>
-						<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
+						<TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
 						<Grid Grid.Row="1">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
@@ -61,15 +61,44 @@
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 						
-							<TextBlock Grid.Row="0" Grid.Column="0"  Text="Hue: "/>
-							<TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" ToolTipService.ToolTip="{Binding LampState_Hue}"/>
-							<TextBlock Grid.Row="1" Grid.Column="0"  Text="Brightness: " />
-							<TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}"  ToolTipService.ToolTip="{Binding LampState_Brightness}"/>
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="Hue: "/>
+							<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" >
+								<ToolTipService.ToolTip>
+									<StackPanel>
+										<TextBlock Text="AllJoyn raw value (UInt32):" />
+										<TextBlock Text="{Binding LampState_Hue}" HorizontalAlignment="Right" />
+									</StackPanel>
+								</ToolTipService.ToolTip>
+							</TextBlock>
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="Brightness: " />
+							<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" >
+								<ToolTipService.ToolTip>
+									<StackPanel>
+										<TextBlock Text="AllJoyn raw value (UInt32):" />
+										<TextBlock Text="{Binding LampState_Brightness}" HorizontalAlignment="Right" />
+									</StackPanel>
+								</ToolTipService.ToolTip>
+							</TextBlock>
+
 							<TextBlock Grid.Row="2" Grid.Column="0"  Text="Saturation: " />
-							<TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" ToolTipService.ToolTip="{Binding LampState_Saturation}" />
+							<TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" >
+								<ToolTipService.ToolTip>
+									<StackPanel>
+										<TextBlock Text="AllJoyn raw value (UInt32):" />
+										<TextBlock Text="{Binding LampState_Saturation}" HorizontalAlignment="Right" />
+									</StackPanel>
+								</ToolTipService.ToolTip>
+							</TextBlock>
 							<TextBlock Grid.Row="3" Grid.Column="0"  Text="Temp: " />
-							<TextBlock Grid.Row="3" Grid.Column="1"  Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}" ToolTipService.ToolTip="{Binding LampState_ColorTemp}" />
-							
+							<TextBlock Grid.Row="3" Grid.Column="1"  Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}">
+								<ToolTipService.ToolTip>
+									<StackPanel>
+										<TextBlock Text="AllJoyn raw value (UInt32):" />
+										<TextBlock Text="{Binding LampState_ColorTemp}" HorizontalAlignment="Right" />
+									</StackPanel>
+								</ToolTipService.ToolTip>
+							</TextBlock>
+
 							<ToggleSwitch Grid.Row="4" Grid.ColumnSpan="2"  IsOn="{Binding LampState_OnOff}" IsEnabled="False" />
 
 						</Grid>

@@ -3,35 +3,66 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AllJoynSimulatorApp"
-	xmlns:deviceViews="using:AllJoynSimulatorApp.DeviceViews"
+	  xmlns:deviceViews="using:AllJoynSimulatorApp.DeviceViews"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-	<Page.Resources>
-	</Page.Resources>
 
 	<Grid Background="#333333">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="itemsView.ItemsPanel" >
+							<Setter.Value>
+								<ItemsPanelTemplate>
+									<StackPanel />
+								</ItemsPanelTemplate>
+							</Setter.Value>
+						</Setter>
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="870" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="itemsView.ItemsPanel" >
+							<Setter.Value>
+								<ItemsPanelTemplate>
+									<ItemsWrapGrid Orientation="Horizontal" ItemWidth="420" />
+								</ItemsPanelTemplate>
+							</Setter.Value>
+						</Setter>
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 		<TextBlock HorizontalAlignment="Center"
+				   Grid.Row="1" VerticalAlignment="Top"
 				   x:Name="status" FontSize="24" TextWrapping="Wrap"
 				   Margin="20"/>
 
 		<ScrollViewer ZoomMode="Disabled" Grid.Row="1">
-			<ItemsControl ItemsSource="{Binding Bulbs}" Grid.Row="1" Margin="10" >
+			<ItemsControl x:Name="itemsView" ItemsSource="{Binding Bulbs}" Grid.Row="1" Margin="10" >
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<ItemsWrapGrid Orientation="Horizontal" />
+						<ItemsWrapGrid Orientation="Horizontal" ItemWidth="420" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Grid>
+						<Grid >
 							<deviceViews:LightBulbView DataContext="{Binding}" />
-							<Button BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top"
-										Margin="20" Background="Transparent"
+							<Button BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+										Margin="10,15" Background="Transparent"
 										Click="Delete_Item_Tapped">
 								<SymbolIcon Symbol="Delete" />
 							</Button>
@@ -40,7 +71,7 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<Button Content="Add New Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click_AddBulb" />
+		<Button x:Name="addBulbButton" IsEnabled="False" Content="Add New Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click_AddBulb" />
 		<Button Content="Help" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Click="Button_Click_Help" />
 
 		<Grid x:Name="AddBulbWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed">

@@ -44,6 +44,7 @@ namespace AllJoynSimulatorApp
             {
                 await AllJoynDeviceManager.Current.StartupTask;
                 status.Text = ""; // Bridge Successfully Initialized
+                addBulbButton.IsEnabled = true;
             }
             catch (System.Exception ex)
             {
