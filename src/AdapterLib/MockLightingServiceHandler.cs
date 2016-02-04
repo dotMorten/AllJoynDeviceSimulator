@@ -211,7 +211,10 @@ namespace AdapterLib
                 if (propertyName == nameof(LampState_Hue) ||
                     propertyName == nameof(LampState_Brightness) ||
                     propertyName == nameof(LampState_Saturation))
+                {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Color)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ColorFullBrightness)));
+                }
                 if (propertyName == nameof(LampState_Brightness) ||
                     propertyName == nameof(LampState_OnOff))
                 {
@@ -423,7 +426,7 @@ namespace AdapterLib
                 if (!LampDetails_Color) { h = 0; s = 0; }
                 if (!LampDetails_Dimmable) { b = MaxUIntValue; }
                 var brightnessFactor = (this.saturation / (double)MaxUIntValue) + 1;
-                var b2 = (float)(b / (double)uint.MaxValue / brightnessFactor);
+                var b2 = (float)(b / (double)MaxUIntValue / brightnessFactor);
                 return FromAhsb(h, s, b2);
             }
         }
@@ -434,8 +437,8 @@ namespace AdapterLib
                 if (!LampDetails_Color)
                     return Windows.UI.Colors.White;
                 return FromAhsb(
-                    (float)(this.hue * 360d / uint.MaxValue),
-                    (float)(this.saturation / (double)uint.MaxValue),
+                    (float)(this.hue * 360d / MaxUIntValue),
+                    (float)(this.saturation / (double)MaxUIntValue),
                    .5f);
             }
         }
