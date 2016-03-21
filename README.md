@@ -2,6 +2,8 @@
 
 A Windows 10 app that mocks AllJoyn devices for testing your AllJoyn apps.
 
+Also available for install directly from the Windows Store: https://www.microsoft.com/store/apps/9nblggh5g72l
+
 Devices supported (more to come):
 - Lighting Service Framework
  
