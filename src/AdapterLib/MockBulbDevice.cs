@@ -32,7 +32,7 @@ namespace AdapterLib
             "MockLight Inc", "Mock Bulb", "1", handler.Id, "")
         {
             base.LightingServiceHandler = handler;
-            //Icon = new AdapterIcon(new HueLampInfo().IconUri);
+            Icon = new AdapterIcon("ms-appx:///AdapterLib/Icons/Light.png");
         }
 
     }

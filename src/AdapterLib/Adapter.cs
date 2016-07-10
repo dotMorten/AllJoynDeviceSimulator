@@ -42,8 +42,6 @@ namespace AdapterLib
         private const int DEVICE_REMOVAL_SIGNAL_INDEX = 1;
         private const int DEVICE_REMOVAL_SIGNAL_PARAM_INDEX = 0;
 
-        private readonly System.Threading.Timer checkForBridgesTimer;
-
         public string Vendor { get; }
 
         public string AdapterName { get; }
