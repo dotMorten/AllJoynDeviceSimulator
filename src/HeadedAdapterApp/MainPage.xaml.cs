@@ -63,14 +63,7 @@ namespace AllJoynSimulatorApp
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
                 return;
             }
-            AllJoynDeviceManager.Current.NotificationRecieved += Current_NotificationRecieved;
             LoadBulbs();
-        }
-
-        private void Current_NotificationRecieved(object sender, AllJoynDeviceManager.NotificationEventArgs e)
-        {
-            //TODO
-            //System.Diagnostics.Debugger.Break();
         }
 
         private void LoadBulbs()
@@ -79,9 +72,9 @@ namespace AllJoynSimulatorApp
             if (!settings.Containers.ContainsKey("Bulbs"))
             {
                 // Create a set of initial bulbs
-                var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color+Temp Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
+                var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
                 AllJoynDeviceManager.Current.AddBulb(bulb);
-                bulb = new MockLightingServiceHandler($"Mock Dimmable+Temp Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
+                bulb = new MockLightingServiceHandler($"Mock Temperature Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
                 AllJoynDeviceManager.Current.AddBulb(bulb);
                 bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
                 AllJoynDeviceManager.Current.AddBulb(bulb);
