@@ -154,18 +154,6 @@
       <Project>{2783a617-8e1d-40d1-9684-dfaeb8dd5406}</Project>
       <Name>BridgeRT</Name>
     </ProjectReference>
-    <ProjectReference Include="org.alljoyn.Notification.Dismisser\org.alljoyn.Notification.Dismisser.vcxproj">
-      <Project>{7bd794ca-03bd-4d82-a46e-1b795dd31eae}</Project>
-      <Name>org.alljoyn.Notification.Dismisser</Name>
-    </ProjectReference>
-    <ProjectReference Include="org.alljoyn.Notification.Producer\org.alljoyn.Notification.Producer.vcxproj">
-      <Project>{be167db2-22d1-4299-9219-525e4c45942d}</Project>
-      <Name>org.alljoyn.Notification.Producer</Name>
-    </ProjectReference>
-    <ProjectReference Include="org.alljoyn.Notification\org.alljoyn.Notification.vcxproj">
-      <Project>{0f2461f9-ff77-4d9e-b449-66a2af983eef}</Project>
-      <Name>org.alljoyn.Notification</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

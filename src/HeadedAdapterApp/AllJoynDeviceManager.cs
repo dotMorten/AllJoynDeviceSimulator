@@ -32,6 +32,21 @@ namespace AllJoynSimulatorApp
 
         public Task StartupTask { get; private set; }
 
+        public async Task Shutdown()
+        {
+            foreach (var bulb in Bulbs.ToArray())
+                RemoveBulb(bulb);
+            await Task.Delay(1000); //Give it some time to announce devices lost
+            StartupTask = null;
+            dsbBridge.Shutdown();
+            dsbBridge.Dispose();
+            dsbBridge = null;
+            adapter.Shutdown();
+            adapter = null;
+            instance = null;
+            await Task.Delay(1000); //Give it some time to announce DSB lost
+        }
+
         private AllJoynDeviceManager()
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -53,7 +68,6 @@ namespace AllJoynSimulatorApp
                     throw;
                 }
             })).AsTask();
-            InitializeNotification();  
         }
 
         public void AddBulb(MockLightingServiceHandler bulb)
@@ -69,68 +83,5 @@ namespace AllJoynSimulatorApp
 
         ObservableCollection<MockLightingServiceHandler> _Bulbs = new ObservableCollection<MockLightingServiceHandler>();
         public IEnumerable<MockLightingServiceHandler> Bulbs { get { return _Bulbs; } }
-
-
-
-        #region Notifications
-
-        private void InitializeNotification()
-        {
-            AllJoynBusAttachment bus = new AllJoynBusAttachment();
-            bus.AboutData.DefaultDescription = "AllJoyn Device Simulator";
-            bus.AboutData.ModelNumber = "Notification Consumer";
-
-            org.alljoyn.Notification.NotificationWatcher watcher = new org.alljoyn.Notification.NotificationWatcher(bus);
-            watcher.Start();
-            watcher.Added += Watcher_Added;
-        }
-
-        private async void Watcher_Added(org.alljoyn.Notification.NotificationWatcher sender, AllJoynServiceInfo args)
-        {
-            var consumer = await org.alljoyn.Notification.NotificationConsumer.JoinSessionAsync(args, sender);
-            consumer.Consumer.Signals.NotifyReceived += Signals_NotifyReceived;
-        }
-
-        private void Signals_NotifyReceived(org.alljoyn.Notification.NotificationSignals sender, org.alljoyn.Notification.NotificationNotifyReceivedEventArgs args)
-        {
-            var e = new NotificationEventArgs()
-            {
-                Version = args.Arg,
-                MsgId = args.Arg2,
-                MsgType = args.Arg3,
-                DeviceId = args.Arg4,
-                DeviceName = args.Arg5,
-                AppId = new Guid(args.Arg6.ToArray()),
-                AppName = args.Arg7,
-                Attributes = args.Arg8,
-                CustomAttributes = args.Arg9,
-            };
-            Dictionary<string, string> languages = new Dictionary<string, string>();
-            foreach(var item in args.Arg10)
-            {
-                languages.Add(item.Value1, item.Value2);
-            }
-            e.Text = languages;
-            NotificationRecieved?.Invoke(this, e);
-        }
-
-        public event EventHandler<NotificationEventArgs> NotificationRecieved;
-
-        public sealed class NotificationEventArgs : EventArgs
-        {
-            public UInt16 Version { get; set; }
-            public int MsgId { get; set; }
-            public UInt16 MsgType { get; set; }
-            public string DeviceId { get; set; }
-            public string DeviceName { get; set; }
-            public Guid AppId { get; set; }
-            public string AppName { get; set; }
-            public IDictionary<int, object> Attributes { get; set; }
-            public IDictionary<string, string> CustomAttributes { get; set; }
-            public IDictionary<string, string> Text { get; set; }
-        }
-
-
-        #endregion Notifications
     }
 }

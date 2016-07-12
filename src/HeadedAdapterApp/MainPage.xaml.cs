@@ -29,12 +29,24 @@ namespace AllJoynSimulatorApp
             this.InitializeComponent();
             CheckBridgeStatus();
             App.Current.Suspending += Current_Suspending;
+            App.Current.Resuming += Current_Resuming;
         }
 
-        private void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        private async void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
         {
-            if(this.DataContext != null)
+            if (this.DataContext != null)
+            {
+                this.DataContext = null;
                 SaveBulbs();
+                var d = e.SuspendingOperation.GetDeferral();
+                await AllJoynDeviceManager.Current.Shutdown();
+                d.Complete();
+            }
+        }
+
+        private void Current_Resuming(object sender, object e)
+        {
+            CheckBridgeStatus();
         }
 
         private async void CheckBridgeStatus()

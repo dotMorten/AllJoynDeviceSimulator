@@ -197,3 +197,6 @@ FakesAssemblies/
 project.lock.json
 src/HeadedAdapterApp/AlljoynDeviceSimulator.VC.opendb
 src/HeadedAdapterApp/BundleArtifacts/
+*.VC.opendb
+src/AlljoynDeviceSimulator.VC.db
+src/HeadedAdapterApp/_pkginfo.txt
