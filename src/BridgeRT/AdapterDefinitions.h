@@ -46,7 +46,11 @@ namespace BridgeRT
     typedef Platform::Collections::Vector<IAdapterSignal^> AdapterSignalVector;
     typedef Windows::Foundation::Collections::IVector<IAdapterSignal^> IAdapterSignalVector;
 
-    interface class IAdapterDevice;
+	interface class IAdapterInterface;
+	typedef Platform::Collections::Map<Platform::String^, IAdapterInterface^> AdapterObjectPathMap;
+	typedef Windows::Foundation::Collections::IMap<Platform::String^, IAdapterInterface^> IAdapterObjectPathMap;
+	
+	interface class IAdapterDevice;
     typedef Platform::Collections::Vector<IAdapterDevice^> AdapterDeviceVector;
     typedef Windows::Foundation::Collections::IVector<IAdapterDevice^> IAdapterDeviceVector;
 

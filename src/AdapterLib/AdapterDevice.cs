@@ -259,6 +259,7 @@ namespace AdapterLib
             get; protected set;
         }
 
+        public IDictionary<string, IAdapterInterface> ObjectPaths { get; } = new Dictionary<string, IAdapterInterface>();
 
         internal AdapterDevice(
             string Name,

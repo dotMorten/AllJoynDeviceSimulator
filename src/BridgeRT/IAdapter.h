@@ -283,7 +283,31 @@ namespace BridgeRT
 
     };
 
+	public interface class IAdapterInterface
+	{
+		property Platform::String^ Name
+		{
+			Platform::String^ get();
+		}
 
+		// Device properties
+		property IAdapterPropertyVector^ Properties
+		{
+			IAdapterPropertyVector^ get();
+		}
+
+		// Device methods
+		property IAdapterMethodVector^ Methods
+		{
+			IAdapterMethodVector^ get();
+		}
+
+		// Device signals
+		property IAdapterSignalVector^ Signals
+		{
+			IAdapterSignalVector^ get();
+		}
+	};
 
     //
     // IAdapterDevice interface.
@@ -343,6 +367,11 @@ namespace BridgeRT
         {
             IAdapterSignalVector^ get();
         }
+
+		property IAdapterObjectPathMap^ ObjectPaths
+		{
+			IAdapterObjectPathMap^ get();
+		}
 
         property IAdapterIcon^ Icon
         {
