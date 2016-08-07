@@ -94,6 +94,8 @@
     <Compile Include="AdapterSignal.cs" />
     <Compile Include="AdapterIcon.cs" />
     <Compile Include="MockBulbDevice.cs" />
+    <Compile Include="MockCurrentHumidity.cs" />
+    <Compile Include="MockCurrentTemperatureDevice.cs" />
     <Compile Include="MockLightingServiceHandler.cs" />
     <Compile Include="LsfEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
