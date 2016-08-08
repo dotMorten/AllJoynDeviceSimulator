@@ -51,7 +51,7 @@
 				   Margin="20"/>
 
 		<ScrollViewer ZoomMode="Disabled" Grid.Row="1">
-			<ItemsControl x:Name="itemsView" ItemsSource="{Binding Bulbs}" Grid.Row="1" Margin="10" >
+			<ItemsControl x:Name="itemsView" ItemsSource="{Binding Devices}" Grid.Row="1" Margin="10" >
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<ItemsWrapGrid Orientation="Horizontal" ItemWidth="420" />
@@ -60,7 +60,7 @@
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<Grid >
-							<deviceViews:LightBulbView DataContext="{Binding}" />
+							<deviceViews:DeviceView Device="{Binding}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" />
 							<Button BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
 										Margin="10,15" Background="Transparent"
 										Click="Delete_Item_Tapped">

@@ -87,7 +87,7 @@ namespace AdapterLib
             try
             {
                 this.Signals = new List<IAdapterSignal>();
-                this.devices = new List<AdapterDevice>();
+                this.devices = new List<IAdapterDevice>();
                 this.signalListeners = new Dictionary<int, IList<SIGNAL_LISTENER_ENTRY>>();
 
                 //var EnableJoinMethod = new AdapterMethod("Find Hue Bridges", "Searches for new hue bridges", 0);
@@ -102,6 +102,17 @@ namespace AdapterLib
             }
         }
 
+        public void AddDevice(IAdapterDevice device)
+        {
+            this.devices.Add(device);
+            this.NotifyDeviceArrival(device);
+        }
+
+        public void RemoveDevice(IAdapterDevice device)
+        {
+            this.devices.Remove(device);
+            this.NotifyDeviceRemoval(device);
+        }
         public void AddBulb(MockLightingServiceHandler handler)
         {
             var bulb = new MockBulbDevice(handler);
@@ -110,7 +121,8 @@ namespace AdapterLib
         }
         public void RemoveBulb(MockLightingServiceHandler handler)
         {
-            var bulb = this.devices.Where(d => d.LightingServiceHandler == handler).FirstOrDefault();
+            
+            var bulb = this.devices.OfType<AdapterDevice>().Where(d => d.LightingServiceHandler == handler).FirstOrDefault();
             if(bulb != null)
             {
                 this.devices.Remove(bulb);
@@ -413,7 +425,7 @@ namespace AdapterLib
         }
 
         // List of Devices
-        private IList<AdapterDevice> devices;
+        private IList<IAdapterDevice> devices;
 
         // A map of signal handle (object's hash code) and related listener entry
         private Dictionary<int, IList<SIGNAL_LISTENER_ENTRY>> signalListeners;

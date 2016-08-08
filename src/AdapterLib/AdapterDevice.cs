@@ -209,7 +209,7 @@ namespace AdapterLib
     // Description:
     // The class that implements IAdapterDevice from BridgeRT.
     //
-    class AdapterDevice : IAdapterDevice,
+    public class AdapterDevice : IAdapterDevice,
                             IAdapterDeviceLightingService,
                             IAdapterDeviceControlPanel
     {

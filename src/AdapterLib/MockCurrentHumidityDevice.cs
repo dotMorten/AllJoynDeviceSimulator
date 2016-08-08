@@ -27,12 +27,14 @@ using System.ComponentModel;
 */
 namespace AdapterLib
 {
-    internal sealed class MockCurrentHumidity : AdapterDevice, INotifyPropertyChanged
+    public sealed class MockCurrentHumidityDevice : AdapterDevice, INotifyPropertyChanged
     {
         private Adapter _bridge;
         private IAdapterProperty _property;
+        private double _currentValue;
+        private System.Threading.CancellationTokenSource _updateToken;
 
-        public MockCurrentHumidity(Adapter bridge, string name, string id, double currentHumidity) :
+        public MockCurrentHumidityDevice(Adapter bridge, string name, string id, double currentHumidity) :
             base(name, "MockDevices Inc", "Mock Humidity", "1", id, "")
         {
             _bridge = bridge;
@@ -41,20 +43,6 @@ namespace AdapterLib
             CreateEmitSignalChangedSignal();
             CurrentValue = currentHumidity;
         }
-
-        public double CurrentValue { get; private set; }
-
-        public void UpdateValue(double value)
-        {
-            var attr = _property.Attributes.Where(a => a.Value.Name == "CurrentValue").First();
-            if (attr.Value.Data != (object)value)
-            {
-                attr.Value.Data = value;
-                _bridge.SignalChangeOfAttributeValue(this, _property, attr);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentValue)));
-            }
-        }
-
         private static IAdapterProperty CreateInterface(string objectPath, double currentValue)
         {
             AdapterProperty property = new AdapterProperty(objectPath, "org.alljoyn.SmartSpaces.Environment.CurrentHumidity");
@@ -75,6 +63,35 @@ namespace AdapterLib
             changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__PROPERTY_HANDLE, null));
             changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__ATTRIBUTE_HANDLE, null));
             Signals.Add(changeOfAttributeValue);
+        }
+
+        public double CurrentValue
+        {
+            get { return _currentValue; }
+            set
+            {
+                _currentValue = Math.Round(value, 1);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentValue)));
+
+                //Throttle updates to 1sec so we don't saturate the bus
+                if (_updateToken != null) _updateToken.Cancel();
+                var token = _updateToken = new System.Threading.CancellationTokenSource();
+                Task.Delay(1000).ContinueWith(t =>
+                {
+                    if (!token.IsCancellationRequested)
+                        UpdateValue(_currentValue);
+                });
+            }
+        }
+
+        public void UpdateValue(double value)
+        {
+            var attr = _property.Attributes.Where(a => a.Value.Name == "CurrentValue").First();
+            if (attr.Value.Data != (object)value)
+            {
+                attr.Value.Data = value;
+                _bridge.SignalChangeOfAttributeValue(this, _property, attr);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

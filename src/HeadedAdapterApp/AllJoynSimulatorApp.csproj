@@ -101,6 +101,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoolToVisibilityConverter.cs" />
+    <Compile Include="DeviceViews\DeviceView.cs" />
+    <Compile Include="DeviceViews\HumidityView.cs" />
+    <Compile Include="DeviceViews\TemperatureView.cs" />
     <Compile Include="DeviceViews\LightBulbView.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

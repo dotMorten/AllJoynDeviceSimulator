@@ -3,6 +3,7 @@ using BridgeRT;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace AllJoynSimulatorApp
         }
 
         private Adapter adapter;
+        public Adapter DsbAdapter { get { return adapter; } }
 
         public DsbBridge dsbBridge { get; private set; }
 
@@ -73,15 +75,30 @@ namespace AllJoynSimulatorApp
         public void AddBulb(MockLightingServiceHandler bulb)
         {
             _Bulbs.Add(bulb);
+            _Devices.Add(bulb);
             adapter.AddBulb(bulb);
         }
         public void RemoveBulb(MockLightingServiceHandler bulb)
         {
             _Bulbs.Remove(bulb);
+            _Devices.Remove(bulb);
             adapter.RemoveBulb(bulb);
         }
+        public void AddDevice(INotifyPropertyChanged device)
+        {
+            _Devices.Add(device);
+            adapter.AddDevice((IAdapterDevice)device);
+        }
+        public void RemoveDevice(INotifyPropertyChanged device)
+        {
+            _Devices.Remove(device);
+            adapter.RemoveDevice((IAdapterDevice)device);
+        }
 
-        ObservableCollection<MockLightingServiceHandler> _Bulbs = new ObservableCollection<MockLightingServiceHandler>();
+        private ObservableCollection<MockLightingServiceHandler> _Bulbs = new ObservableCollection<MockLightingServiceHandler>();
         public IEnumerable<MockLightingServiceHandler> Bulbs { get { return _Bulbs; } }
+
+        private ObservableCollection<INotifyPropertyChanged> _Devices = new ObservableCollection<INotifyPropertyChanged>();
+        public IEnumerable<INotifyPropertyChanged> Devices { get { return _Devices; } }
     }
 }

@@ -3,6 +3,7 @@ using BridgeRT;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -72,13 +73,9 @@ namespace AllJoynSimulatorApp
             if (!settings.Containers.ContainsKey("Bulbs"))
             {
                 // Create a set of initial bulbs
-                var bulb = new MockLightingServiceHandler($"Mock Dimmable+Color Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
+                var bulb = new MockLightingServiceHandler($"Mock Advanced Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
                 AllJoynDeviceManager.Current.AddBulb(bulb);
-                bulb = new MockLightingServiceHandler($"Mock Temperature Bulb", Guid.NewGuid().ToString(), true, false, true, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddBulb(bulb);
-                bulb = new MockLightingServiceHandler($"Mock Dimmable Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddBulb(bulb);
-                bulb = new MockLightingServiceHandler($"Mock Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
+                bulb = new MockLightingServiceHandler($"Mock Simple Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
                 AllJoynDeviceManager.Current.AddBulb(bulb);
             }
             else
@@ -90,6 +87,8 @@ namespace AllJoynSimulatorApp
                     AllJoynDeviceManager.Current.AddBulb(bulb);
                 }
             }
+            AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
+            AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));
 
             this.DataContext = AllJoynDeviceManager.Current;
         }
@@ -132,8 +131,18 @@ namespace AllJoynSimulatorApp
         private void Delete_Item_Tapped(object sender, RoutedEventArgs e)
         {
             var bulb = (sender as FrameworkElement).DataContext as MockLightingServiceHandler;
-            AllJoynDeviceManager.Current.RemoveBulb(bulb);
-            SaveBulbs();
+            if (bulb != null)
+            {
+                AllJoynDeviceManager.Current.RemoveBulb(bulb);
+                SaveBulbs();
+                return;
+            }
+            var device = (sender as FrameworkElement).DataContext as INotifyPropertyChanged;
+            if(device != null)
+            {
+                AllJoynDeviceManager.Current.RemoveDevice(device);
+                // TODO: Save
+            }
         }
 
         private void Button_Click_Help(object sender, RoutedEventArgs e)
