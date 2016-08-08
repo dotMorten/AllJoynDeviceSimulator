@@ -29,7 +29,7 @@ namespace AdapterLib
     {
         static int id = 0;
         public MockBulbDevice(MockLightingServiceHandler handler) : base(handler.Name,
-            "MockLight Inc", "Mock Bulb", "1", handler.Id, "")
+            "MockDevices Inc", "Mock Bulb", "1", handler.Id, "")
         {
             base.LightingServiceHandler = handler;
             Icon = new AdapterIcon("ms-appx:///AdapterLib/Icons/Light.png");
