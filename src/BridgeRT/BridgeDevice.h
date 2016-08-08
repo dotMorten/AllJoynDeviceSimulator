@@ -50,7 +50,7 @@ namespace BridgeRT
         std::string GetBusObjectPath(_In_ IAdapterProperty ^adapterProperty);
         bool IsEqual(_In_ IAdapterDevice ^device);
         bool IsBusObjectPathUnique(std::string &path);
-		alljoyn_busobject GetBusObject(std::string &path);
+        alljoyn_busobject GetBusObject(std::string &path);
         inline DWORD GetUniqueIdForInterface()
         {
             return m_uniqueIdForInterfaces++;

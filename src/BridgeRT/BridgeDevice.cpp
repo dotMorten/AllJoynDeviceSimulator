@@ -346,16 +346,16 @@ bool BridgeDevice::IsBusObjectPathUnique(std::string &path)
 
 alljoyn_busobject BridgeDevice::GetBusObject(std::string &path)
 {
-	auto index = m_deviceProperties.find(path);
-	if (m_deviceProperties.end() == index)
-	{
-		return nullptr;
-	}
-	else
-	{
-		auto prop = m_deviceProperties.at(path);
-		return prop->GetBusObject();
-	}
+    auto index = m_deviceProperties.find(path);
+    if (m_deviceProperties.end() == index)
+    {
+        return nullptr;
+    }
+    else
+    {
+        auto prop = m_deviceProperties.at(path);
+        return prop->GetBusObject();
+    }
 }
 
 QStatus BridgeDevice::InitializeAllJoyn()

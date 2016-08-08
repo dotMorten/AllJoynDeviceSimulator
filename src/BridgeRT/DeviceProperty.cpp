@@ -84,21 +84,21 @@ QStatus DeviceProperty::Initialize(IAdapterProperty ^deviceProperty, PropertyInt
     AllJoynHelper::EncodeBusObjectName(m_deviceProperty->Name, tempString);
     m_AJBusObjectPath = "/" + tempString;
 
-	alljoyn_busobject bus = parent->GetBusObject(m_AJBusObjectPath);
+    alljoyn_busobject bus = parent->GetBusObject(m_AJBusObjectPath);
     if (bus == nullptr)
     {
-		// create alljoyn bus object and register it
-		m_AJBusObject = alljoyn_busobject_create(m_AJBusObjectPath.c_str(), QCC_FALSE, &callbacks, this);
-		if (NULL == m_AJBusObject)
-		{
-			status = ER_OUT_OF_MEMORY;
-			goto leave;
-		}
-	}
-	else
-	{
-		m_AJBusObject = bus;
-	}
+        // create alljoyn bus object and register it
+        m_AJBusObject = alljoyn_busobject_create(m_AJBusObjectPath.c_str(), QCC_FALSE, &callbacks, this);
+        if (NULL == m_AJBusObject)
+        {
+            status = ER_OUT_OF_MEMORY;
+            goto leave;
+        }
+    }
+    else
+    {
+        m_AJBusObject = bus;
+    }
 
     status = alljoyn_busobject_addinterface(m_AJBusObject, propertyInterface->GetInterfaceDescription());
     if (ER_BUS_IFACE_ALREADY_EXISTS == status)
@@ -116,14 +116,14 @@ QStatus DeviceProperty::Initialize(IAdapterProperty ^deviceProperty, PropertyInt
     {
         goto leave;
     }
-	if (bus == nullptr)
-	{
-		status = alljoyn_busattachment_registerbusobject(parent->GetBusAttachment(), m_AJBusObject);
-		if (ER_OK != status)
-		{
-			goto leave;
-		}
-	}
+    if (bus == nullptr)
+    {
+        status = alljoyn_busattachment_registerbusobject(parent->GetBusAttachment(), m_AJBusObject);
+        if (ER_OK != status)
+        {
+            goto leave;
+        }
+    }
     m_registeredOnAllJoyn = true;
 
 leave:
