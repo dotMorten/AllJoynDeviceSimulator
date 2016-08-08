@@ -36,8 +36,8 @@ namespace AllJoynSimulatorApp
 
         public async Task Shutdown()
         {
-            foreach (var bulb in Bulbs.ToArray())
-                RemoveBulb(bulb);
+            foreach (var device in Devices.ToArray())
+                RemoveDevice(device);
             await Task.Delay(1000); //Give it some time to announce devices lost
             StartupTask = null;
             dsbBridge.Shutdown();
@@ -71,34 +71,26 @@ namespace AllJoynSimulatorApp
                 }
             })).AsTask();
         }
-
-        public void AddBulb(MockLightingServiceHandler bulb)
-        {
-            _Bulbs.Add(bulb);
-            _Devices.Add(bulb);
-            adapter.AddBulb(bulb);
-        }
-        public void RemoveBulb(MockLightingServiceHandler bulb)
-        {
-            _Bulbs.Remove(bulb);
-            _Devices.Remove(bulb);
-            adapter.RemoveBulb(bulb);
-        }
+        
         public void AddDevice(INotifyPropertyChanged device)
         {
             _Devices.Add(device);
-            adapter.AddDevice((IAdapterDevice)device);
+            if (device is MockLightingServiceHandler)
+                adapter.AddBulb((MockLightingServiceHandler)device);
+            else
+                adapter.AddDevice((IAdapterDevice)device);
         }
         public void RemoveDevice(INotifyPropertyChanged device)
         {
             _Devices.Remove(device);
-            adapter.RemoveDevice((IAdapterDevice)device);
+            if (device is MockLightingServiceHandler)
+                adapter.RemoveBulb((MockLightingServiceHandler)device);
+            else
+                adapter.RemoveDevice((IAdapterDevice)device);
         }
-
-        private ObservableCollection<MockLightingServiceHandler> _Bulbs = new ObservableCollection<MockLightingServiceHandler>();
-        public IEnumerable<MockLightingServiceHandler> Bulbs { get { return _Bulbs; } }
-
+        
         private ObservableCollection<INotifyPropertyChanged> _Devices = new ObservableCollection<INotifyPropertyChanged>();
+
         public IEnumerable<INotifyPropertyChanged> Devices { get { return _Devices; } }
     }
 }

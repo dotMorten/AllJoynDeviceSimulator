@@ -71,8 +71,13 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<Button x:Name="addBulbButton" IsEnabled="False" Content="Add New Bulb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20" Click="Button_Click_AddBulb" />
-		<Button Content="Help" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Click="Button_Click_Help" />
+        <ComboBox x:Name="addDeviceBox" SelectedIndex="0" IsEnabled="False" SelectionChanged="ComboBox_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+            <ComboBoxItem Content="Create new device..." />
+            <ComboBoxItem Content="Lamp" />
+            <ComboBoxItem Content="Temperature Sensor" />
+            <ComboBoxItem Content="Humidity Sensor" />
+        </ComboBox>
+        <Button Content="Help" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Click="Button_Click_Help" />
 
 		<Grid x:Name="AddBulbWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed"	>
 
@@ -103,5 +108,28 @@
 				</Grid>
 			</Grid>
 		</Grid>
-	</Grid>
+
+        <Grid x:Name="AddSensorWindow" Background="#66FFFFFF" Grid.RowSpan="2" Visibility="Collapsed"	>
+
+            <Grid VerticalAlignment="Center" Background="White" Padding="20"
+				  RequestedTheme="Light">
+                <Grid MaxWidth="400" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition Height="10" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Name:" VerticalAlignment="Center" />
+                    <TextBox x:Name="sensorName" Text="Sensor 5" Width="200" Grid.Row="1" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Bottom" x:Name="okcancelPanel2">
+                        <Button Content="OK" Width="80" Click="AddSensorButton_Click_OK" />
+                        <Button Content="Cancel" Width="80" Margin="20,0,0,0" Click="Button_Click_Cancel" />
+                    </StackPanel>
+
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
 </Page>

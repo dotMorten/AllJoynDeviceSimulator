@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -24,7 +26,6 @@ namespace AllJoynSimulatorApp
 {
     public sealed partial class MainPage : Page
     {
-
         public MainPage()
         {
             this.InitializeComponent();
@@ -38,7 +39,7 @@ namespace AllJoynSimulatorApp
             if (this.DataContext != null)
             {
                 this.DataContext = null;
-                SaveBulbs();
+                SaveDevices();
                 var d = e.SuspendingOperation.GetDeferral();
                 await AllJoynDeviceManager.Current.Shutdown();
                 d.Complete();
@@ -57,7 +58,7 @@ namespace AllJoynSimulatorApp
             {
                 await AllJoynDeviceManager.Current.StartupTask;
                 status.Text = ""; // Bridge Successfully Initialized
-                addBulbButton.IsEnabled = true;
+                addDeviceBox.IsEnabled = true;
             }
             catch (System.Exception ex)
             {
@@ -70,44 +71,103 @@ namespace AllJoynSimulatorApp
         private void LoadBulbs()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (!settings.Containers.ContainsKey("Bulbs"))
+            if (!settings.Containers.ContainsKey("Devices"))
             {
                 // Create a set of initial bulbs
                 var bulb = new MockLightingServiceHandler($"Mock Advanced Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddBulb(bulb);
+                AllJoynDeviceManager.Current.AddDevice(bulb);
                 bulb = new MockLightingServiceHandler($"Mock Simple Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddBulb(bulb);
+                AllJoynDeviceManager.Current.AddDevice(bulb);
+                AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
+                AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));
             }
             else
             {
-                var container = settings.Containers["Bulbs"];
+                var container = settings.Containers["Devices"];
                 foreach(var item in container.Values)
                 {
-                    var bulb = MockLightingServiceHandler.FromJson((string)item.Value, Dispatcher);
-                    AllJoynDeviceManager.Current.AddBulb(bulb);
+                    var data = ((string)item.Value).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    var type = data[0].Trim();
+                    if (type == "Lamp")
+                    {
+                        var bulb = MockLightingServiceHandler.FromJson(data[1], Dispatcher);
+                        AllJoynDeviceManager.Current.AddDevice(bulb);
+                    }
+                    else if(type == "CurrentTemperature")
+                    {
+                        var d = new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter,
+                            data[2], data[1], double.Parse(data[3], CultureInfo.InvariantCulture));
+                        AllJoynDeviceManager.Current.AddDevice(d);
+                    }
+                    else if (type == "CurrentHumidity")
+                    {
+                        var d = new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter,
+                            data[2], data[1], double.Parse(data[3], CultureInfo.InvariantCulture));
+                        AllJoynDeviceManager.Current.AddDevice(d);
+                    }
                 }
             }
-            AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
-            AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));
 
             this.DataContext = AllJoynDeviceManager.Current;
         }
-
-        private void SaveBulbs()
+        
+        private void SaveDevices()
         {
-            var container = ApplicationData.Current.LocalSettings.CreateContainer("Bulbs", ApplicationDataCreateDisposition.Always);
+            var container = ApplicationData.Current.LocalSettings.CreateContainer("Devices", ApplicationDataCreateDisposition.Always);
             container.Values.Clear();
             int i = 0;
-            foreach(var b in AllJoynDeviceManager.Current.Bulbs)
+            foreach (var b in AllJoynDeviceManager.Current.Devices)
             {
-                container.Values[i++.ToString("0000")] = b.ToJson();
+                StringBuilder sb = new StringBuilder();
+                if(b is MockLightingServiceHandler)
+                {
+                    sb.AppendLine("Lamp");
+                    sb.Append(((MockLightingServiceHandler)b).ToJson());
+                }
+                else if(b is MockCurrentTemperatureDevice)
+                {
+                    sb.AppendLine("CurrentTemperature");
+                    sb.AppendLine(((MockCurrentTemperatureDevice)b).SerialNumber);
+                    sb.AppendLine(((MockCurrentTemperatureDevice)b).Name);
+                    sb.AppendLine(((MockCurrentTemperatureDevice)b).CurrentValue.ToString(CultureInfo.InvariantCulture));
+                }
+                else if(b is MockCurrentHumidityDevice)
+                {
+                    sb.AppendLine("CurrentHumidity");
+                    sb.AppendLine(((MockCurrentHumidityDevice)b).SerialNumber);
+                    sb.AppendLine(((MockCurrentHumidityDevice)b).Name);
+                    sb.AppendLine(((MockCurrentHumidityDevice)b).CurrentValue.ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    continue;
+                }
+                container.Values[i++.ToString("0000")] = sb.ToString();
             }
         }
 
-        private void Button_Click_AddBulb(object sender, RoutedEventArgs e)
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AddBulbWindow.Visibility = Visibility.Visible;
-            bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDeviceManager.Current.Bulbs.Count() + 1);
+            if (addDeviceBox.SelectedIndex == 0) return;
+            var idx = addDeviceBox.SelectedIndex;
+            addDeviceBox.SelectedIndex = 0;
+            if (idx == 1)
+            {
+                AddBulbWindow.Visibility = Visibility.Visible;
+                bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDeviceManager.Current.Devices.OfType<MockLightingServiceHandler>().Count() + 1);
+            }
+            else if(idx == 2)
+            {
+                AddSensorWindow.Visibility = Visibility.Visible;
+                sensorName.Text = string.Format("Temperature Sensor {0}", AllJoynDeviceManager.Current.Devices.OfType<MockCurrentTemperatureDevice>().Count() + 1);
+                sensorName.Tag = "Temperature";
+            }
+            else if (idx == 3)
+            {
+                AddSensorWindow.Visibility = Visibility.Visible;
+                sensorName.Text = string.Format("Humidity Sensor {0}", AllJoynDeviceManager.Current.Devices.OfType<MockCurrentHumidityDevice>().Count() + 1);
+                sensorName.Tag = "Humidity";
+            }
         }
 
         private void Button_Click_OK(object sender, RoutedEventArgs e)
@@ -118,30 +178,38 @@ namespace AllJoynSimulatorApp
             bulb.LampState_Brightness = UInt32.MaxValue - 1;            
             bulb.LampState_Saturation = UInt32.MaxValue - 1;
             bulb.LampState_OnOff = true;
-            AllJoynDeviceManager.Current.AddBulb(bulb);
-            SaveBulbs();
+            AllJoynDeviceManager.Current.AddDevice(bulb);
+            SaveDevices();
+            Button_Click_Cancel(sender, e);
+        }
+
+        private void AddSensorButton_Click_OK(object sender, RoutedEventArgs e)
+        {
+            if(sensorName.Tag as string == "Temperature")
+            {
+                AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, sensorName.Text, Guid.NewGuid().ToString(), 25));
+                SaveDevices();
+            }
+            else if(sensorName.Tag as string == "Humidity")
+            {
+                AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, sensorName.Text, Guid.NewGuid().ToString(), 50));
+                SaveDevices();
+            }
             Button_Click_Cancel(sender, e);
         }
 
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
-            AddBulbWindow.Visibility = Visibility.Collapsed;
+            AddBulbWindow.Visibility = AddSensorWindow.Visibility = Visibility.Collapsed;
         }
 
         private void Delete_Item_Tapped(object sender, RoutedEventArgs e)
         {
-            var bulb = (sender as FrameworkElement).DataContext as MockLightingServiceHandler;
-            if (bulb != null)
-            {
-                AllJoynDeviceManager.Current.RemoveBulb(bulb);
-                SaveBulbs();
-                return;
-            }
             var device = (sender as FrameworkElement).DataContext as INotifyPropertyChanged;
             if(device != null)
             {
                 AllJoynDeviceManager.Current.RemoveDevice(device);
-                // TODO: Save
+                SaveDevices();
             }
         }
 
