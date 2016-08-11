@@ -195,8 +195,8 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 project.lock.json
-src/HeadedAdapterApp/AlljoynDeviceSimulator.VC.opendb
-src/HeadedAdapterApp/BundleArtifacts/
+src/SimulatorApp/AlljoynDeviceSimulator.VC.opendb
+src/SimulatorApp/BundleArtifacts/
 *.VC.opendb
 src/AlljoynDeviceSimulator.VC.db
-src/HeadedAdapterApp/_pkginfo.txt
+src/SimulatorApp/_pkginfo.txt
