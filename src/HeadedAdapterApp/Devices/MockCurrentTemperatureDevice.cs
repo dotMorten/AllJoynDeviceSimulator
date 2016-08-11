@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BridgeRT;
 using System.ComponentModel;
+using AllJoyn.Dsb;
 
 /*<interface name="org.alljoyn.SmartSpaces.Environment.CurrentTemperature">
   <annotation name="org.alljoyn.Bus.DocString.En" value="This interface provides capability to represent current temperature."/>
@@ -34,39 +35,29 @@ namespace AdapterLib
 {
     public sealed class MockCurrentTemperatureDevice : AdapterDevice, INotifyPropertyChanged
     {
-        private Adapter _bridge;
-        private IAdapterProperty _property;
+        private AdapterInterface _iface;
         private double _currentValue;
         private System.Threading.CancellationTokenSource _updateToken;
 
-        public MockCurrentTemperatureDevice(Adapter bridge, string name, string id, double currentTemperature) : 
+        public MockCurrentTemperatureDevice(string name, string id, double currentTemperature) : 
             base(name, "MockDevices Inc", "Mock Temperature", "1", id, "")
         {
-            _bridge = bridge;
-            _property = CreateInterface("Temperature", currentTemperature);
-            Properties.Add(_property);
+            _iface = CreateInterface(currentTemperature);
+            BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
+            BusObjects[0].Interfaces.Add(_iface);
             CreateEmitSignalChangedSignal();
             _currentValue = currentTemperature;
         }
 
-        private static IAdapterProperty CreateInterface(string objectPath, double currentValue)
+        private static AdapterInterface CreateInterface(double currentValue)
         {
-            AdapterProperty property = new AdapterProperty(objectPath, "org.alljoyn.SmartSpaces.Environment.CurrentTemperature");
-            property.Attributes.Add(new AdapterAttribute("Version", (ushort)1, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Never });
-            property.Attributes.Add(new AdapterAttribute("CurrentValue", currentValue, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Always });
-            property.Attributes[1].Annotations.Add("org.alljoyn.Bus.Type.Units", "degrees Celcius");
-            property.Attributes.Add(new AdapterAttribute("Precision", 0.1d, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Always });
-            property.Attributes.Add(new AdapterAttribute("UpdateMinTime", (ushort)1000, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Always });
-            return property;
-        }
-
-        private void CreateEmitSignalChangedSignal()
-        {
-            // change of value signal
-            AdapterSignal changeOfAttributeValue = new AdapterSignal(Constants.CHANGE_OF_VALUE_SIGNAL);
-            changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__PROPERTY_HANDLE, null));
-            changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__ATTRIBUTE_HANDLE, null));
-            Signals.Add(changeOfAttributeValue);
+            AdapterInterface iface = new AdapterInterface("org.alljoyn.SmartSpaces.Environment.CurrentTemperature");
+            iface.Properties.Add(new AdapterAttribute("Version", (ushort)1) { COVBehavior = SignalBehavior.Never });
+            iface.Properties.Add(new AdapterAttribute("CurrentValue", currentValue) { COVBehavior = SignalBehavior.Always });
+            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.Type.Units", "degrees Celcius");
+            iface.Properties.Add(new AdapterAttribute("Precision", 0.1d) { COVBehavior = SignalBehavior.Always });
+            iface.Properties.Add(new AdapterAttribute("UpdateMinTime", (ushort)3000) { COVBehavior = SignalBehavior.Always });
+            return iface;
         }
 
         public double CurrentValue
@@ -90,11 +81,11 @@ namespace AdapterLib
 
         private void UpdateValue(double value)
         {
-            var attr = _property.Attributes.Where(a => a.Value.Name == "CurrentValue").First();
+            var attr = _iface.Properties.Where(a => a.Value.Name == "CurrentValue").First();
             if (attr.Value.Data != (object)value)
             {
                 attr.Value.Data = value;
-                _bridge.SignalChangeOfAttributeValue(this, _property, attr);
+                SignalChangeOfAttributeValue(_iface, attr);
             }
         }
 

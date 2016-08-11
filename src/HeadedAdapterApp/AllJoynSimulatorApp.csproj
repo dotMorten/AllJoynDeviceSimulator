@@ -96,12 +96,18 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AllJoynDeviceManager.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoolToVisibilityConverter.cs" />
+    <Compile Include="Devices\LsfEnums.cs" />
+    <Compile Include="Devices\MockBulbDevice.cs" />
+    <Compile Include="Devices\MockCurrentHumidityDevice.cs" />
+    <Compile Include="Devices\MockCurrentTemperatureDevice.cs" />
+    <Compile Include="Devices\MockLightingServiceHandler.cs" />
+    <Compile Include="Devices\MockOnOffSwitch.cs" />
     <Compile Include="DeviceViews\DeviceView.cs" />
+    <Compile Include="DeviceViews\SwitchView.cs" />
     <Compile Include="DeviceViews\HumidityView.cs" />
     <Compile Include="DeviceViews\TemperatureView.cs" />
     <Compile Include="DeviceViews\LightBulbView.cs" />
@@ -131,6 +137,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="fade-to-black.png" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Icons\Light.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -146,17 +153,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AdapterLib\AdapterLib.csproj">
-      <Project>{5254f40c-cd4c-48f9-9c55-8040f071f1b4}</Project>
-      <Name>AdapterLib</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\BridgeRT\BridgeRT.vcxproj">
-      <Project>{2783a617-8e1d-40d1-9684-dfaeb8dd5406}</Project>
-      <Name>BridgeRT</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

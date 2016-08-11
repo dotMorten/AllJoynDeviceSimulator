@@ -1,4 +1,5 @@
 ﻿using AdapterLib;
+using AllJoyn.Dsb;
 using BridgeRT;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace AllJoynSimulatorApp
                 this.DataContext = null;
                 SaveDevices();
                 var d = e.SuspendingOperation.GetDeferral();
-                await AllJoynDeviceManager.Current.Shutdown();
+                await AllJoynDsbServiceManager.Current.ShutdownAsync();
                 d.Complete();
             }
         }
@@ -56,7 +57,15 @@ namespace AllJoynSimulatorApp
             status.Text = "Starting up bridge...";
             try
             {
-                await AllJoynDeviceManager.Current.StartupTask;
+                var config = new BridgeConfiguration(GetDeviceID(), "com.dotMorten.TestApp")
+                {
+                    // The following are optional. If not set will be pulled from the package information and system information
+                    ModelName = "AllJoyn Mock DSB",
+                    DeviceName = "AllJoyn Simulator",
+                    ApplicationName = "AllJoyn Device Simulator",
+                    Vendor = "MockDevices Inc"
+                };
+                await AllJoynDsbServiceManager.Current.StartAsync(config);
                 status.Text = ""; // Bridge Successfully Initialized
                 addDeviceBox.IsEnabled = true;
             }
@@ -68,6 +77,16 @@ namespace AllJoynSimulatorApp
             LoadBulbs();
         }
 
+        private Guid GetDeviceID()
+        {
+            if (!Windows.Storage.ApplicationData.Current.LocalSettings.Values.ContainsKey("DSBDeviceId"))
+            {
+                Guid deviceId = Guid.NewGuid();
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["DSBDeviceId"] = deviceId;
+                return deviceId;
+            }
+            return (Guid)Windows.Storage.ApplicationData.Current.LocalSettings.Values["DSBDeviceId"];
+        }
         private void LoadBulbs()
         {
             var settings = ApplicationData.Current.LocalSettings;
@@ -75,11 +94,12 @@ namespace AllJoynSimulatorApp
             {
                 // Create a set of initial bulbs
                 var bulb = new MockLightingServiceHandler($"Mock Advanced Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddDevice(bulb);
+                AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
                 bulb = new MockLightingServiceHandler($"Mock Simple Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
-                AllJoynDeviceManager.Current.AddDevice(bulb);
-                AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
-                AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, "Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentHumidityDevice("Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentTemperatureDevice("Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockOnOffSwitchDevice("Mock Switch", Guid.NewGuid().ToString(), false, Dispatcher));
             }
             else
             {
@@ -91,24 +111,29 @@ namespace AllJoynSimulatorApp
                     if (type == "Lamp")
                     {
                         var bulb = MockLightingServiceHandler.FromJson(data[1], Dispatcher);
-                        AllJoynDeviceManager.Current.AddDevice(bulb);
+                        AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
                     }
                     else if(type == "CurrentTemperature")
                     {
-                        var d = new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter,
+                        var d = new MockCurrentTemperatureDevice(
                             data[2], data[1], double.Parse(data[3], CultureInfo.InvariantCulture));
-                        AllJoynDeviceManager.Current.AddDevice(d);
+                        AllJoynDsbServiceManager.Current.AddDevice(d);
                     }
                     else if (type == "CurrentHumidity")
                     {
-                        var d = new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter,
+                        var d = new MockCurrentHumidityDevice(
                             data[2], data[1], double.Parse(data[3], CultureInfo.InvariantCulture));
-                        AllJoynDeviceManager.Current.AddDevice(d);
+                        AllJoynDsbServiceManager.Current.AddDevice(d);
+                    }
+                    else if (type == "OnOffSwitch")
+                    {
+                        var d = new MockOnOffSwitchDevice(data[2], data[1], data[3] == "true", Dispatcher);
+                        AllJoynDsbServiceManager.Current.AddDevice(d);
                     }
                 }
             }
 
-            this.DataContext = AllJoynDeviceManager.Current;
+            this.DataContext = AllJoynDsbServiceManager.Current;
         }
         
         private void SaveDevices()
@@ -116,13 +141,13 @@ namespace AllJoynSimulatorApp
             var container = ApplicationData.Current.LocalSettings.CreateContainer("Devices", ApplicationDataCreateDisposition.Always);
             container.Values.Clear();
             int i = 0;
-            foreach (var b in AllJoynDeviceManager.Current.Devices)
+            foreach (var b in AllJoynDsbServiceManager.Current.Devices)
             {
                 StringBuilder sb = new StringBuilder();
-                if(b is MockLightingServiceHandler)
+                if(b is MockBulbDevice)
                 {
                     sb.AppendLine("Lamp");
-                    sb.Append(((MockLightingServiceHandler)b).ToJson());
+                    sb.Append((((MockBulbDevice)b).LightingServiceHandler as MockLightingServiceHandler).ToJson());
                 }
                 else if(b is MockCurrentTemperatureDevice)
                 {
@@ -137,6 +162,13 @@ namespace AllJoynSimulatorApp
                     sb.AppendLine(((MockCurrentHumidityDevice)b).SerialNumber);
                     sb.AppendLine(((MockCurrentHumidityDevice)b).Name);
                     sb.AppendLine(((MockCurrentHumidityDevice)b).CurrentValue.ToString(CultureInfo.InvariantCulture));
+                }
+                else if (b is MockOnOffSwitchDevice)
+                {
+                    sb.AppendLine("OnOffSwitch");
+                    sb.AppendLine(((MockOnOffSwitchDevice)b).SerialNumber);
+                    sb.AppendLine(((MockOnOffSwitchDevice)b).Name);
+                    sb.AppendLine(((MockOnOffSwitchDevice)b).OnOff ? "true" : "false");
                 }
                 else
                 {
@@ -154,19 +186,25 @@ namespace AllJoynSimulatorApp
             if (idx == 1)
             {
                 AddBulbWindow.Visibility = Visibility.Visible;
-                bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDeviceManager.Current.Devices.OfType<MockLightingServiceHandler>().Count() + 1);
+                bulbName.Text = string.Format("Mock Bulb {0}", AllJoynDsbServiceManager.Current.Devices.OfType<MockBulbDevice>().Count() + 1);
             }
             else if(idx == 2)
             {
                 AddSensorWindow.Visibility = Visibility.Visible;
-                sensorName.Text = string.Format("Temperature Sensor {0}", AllJoynDeviceManager.Current.Devices.OfType<MockCurrentTemperatureDevice>().Count() + 1);
+                sensorName.Text = string.Format("Temperature Sensor {0}", AllJoynDsbServiceManager.Current.Devices.OfType<MockCurrentTemperatureDevice>().Count() + 1);
                 sensorName.Tag = "Temperature";
             }
             else if (idx == 3)
             {
                 AddSensorWindow.Visibility = Visibility.Visible;
-                sensorName.Text = string.Format("Humidity Sensor {0}", AllJoynDeviceManager.Current.Devices.OfType<MockCurrentHumidityDevice>().Count() + 1);
+                sensorName.Text = string.Format("Humidity Sensor {0}", AllJoynDsbServiceManager.Current.Devices.OfType<MockCurrentHumidityDevice>().Count() + 1);
                 sensorName.Tag = "Humidity";
+            }
+            else if (idx == 4)
+            {
+                AddSensorWindow.Visibility = Visibility.Visible;
+                sensorName.Text = string.Format("Switch {0}", AllJoynDsbServiceManager.Current.Devices.OfType<MockOnOffSwitchDevice>().Count() + 1);
+                sensorName.Tag = "Switch";
             }
         }
 
@@ -178,7 +216,7 @@ namespace AllJoynSimulatorApp
             bulb.LampState_Brightness = UInt32.MaxValue - 1;            
             bulb.LampState_Saturation = UInt32.MaxValue - 1;
             bulb.LampState_OnOff = true;
-            AllJoynDeviceManager.Current.AddDevice(bulb);
+            AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
             SaveDevices();
             Button_Click_Cancel(sender, e);
         }
@@ -187,12 +225,17 @@ namespace AllJoynSimulatorApp
         {
             if(sensorName.Tag as string == "Temperature")
             {
-                AllJoynDeviceManager.Current.AddDevice(new MockCurrentTemperatureDevice(AllJoynDeviceManager.Current.DsbAdapter, sensorName.Text, Guid.NewGuid().ToString(), 25));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentTemperatureDevice(sensorName.Text, Guid.NewGuid().ToString(), 25));
                 SaveDevices();
             }
             else if(sensorName.Tag as string == "Humidity")
             {
-                AllJoynDeviceManager.Current.AddDevice(new MockCurrentHumidityDevice(AllJoynDeviceManager.Current.DsbAdapter, sensorName.Text, Guid.NewGuid().ToString(), 50));
+                AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentHumidityDevice(sensorName.Text, Guid.NewGuid().ToString(), 50));
+                SaveDevices();
+            }
+            else if (sensorName.Tag as string == "Switch")
+            {
+                AllJoynDsbServiceManager.Current.AddDevice(new MockOnOffSwitchDevice(sensorName.Text, Guid.NewGuid().ToString(), false, Dispatcher));
                 SaveDevices();
             }
             Button_Click_Cancel(sender, e);
@@ -205,10 +248,10 @@ namespace AllJoynSimulatorApp
 
         private void Delete_Item_Tapped(object sender, RoutedEventArgs e)
         {
-            var device = (sender as FrameworkElement).DataContext as INotifyPropertyChanged;
+            var device = (sender as FrameworkElement).DataContext as IAdapterDevice;
             if(device != null)
             {
-                AllJoynDeviceManager.Current.RemoveDevice(device);
+                AllJoynDsbServiceManager.Current.RemoveDevice(device);
                 SaveDevices();
             }
         }

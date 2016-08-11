@@ -14,6 +14,7 @@
             <Setter.Value>
 				<ControlTemplate TargetType="deviceViews:LightBulbView">
 					<Grid RequestedTheme="Dark" Margin="10" Padding="10" Height="160"
+                          DataContext="{Binding LightingServiceHandler}"
 						  Background="Black" BorderBrush="#555555" BorderThickness="1">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
@@ -60,9 +61,9 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
-						
-							<TextBlock Grid.Row="0" Grid.Column="0" Text="Hue: "/>
-							<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" >
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Hue: " Visibility="{Binding LampDetails_Color, Converter={StaticResource boolConv}}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LampState_Hue, Converter={StaticResource hueConv}}" Visibility="{Binding LampDetails_Color, Converter={StaticResource boolConv}}" >
 								<ToolTipService.ToolTip>
 									<StackPanel>
 										<TextBlock Text="AllJoyn raw value (UInt32):" />
@@ -70,8 +71,8 @@
 									</StackPanel>
 								</ToolTipService.ToolTip>
 							</TextBlock>
-							<TextBlock Grid.Row="1" Grid.Column="0" Text="Brightness: " />
-							<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" >
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Brightness: " Visibility="{Binding LampDetails_Dimmable, Converter={StaticResource boolConv}}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LampState_Brightness, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" Visibility="{Binding LampDetails_Dimmable, Converter={StaticResource boolConv}}" >
 								<ToolTipService.ToolTip>
 									<StackPanel>
 										<TextBlock Text="AllJoyn raw value (UInt32):" />
@@ -80,8 +81,8 @@
 								</ToolTipService.ToolTip>
 							</TextBlock>
 
-							<TextBlock Grid.Row="2" Grid.Column="0"  Text="Saturation: " />
-							<TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}" >
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="Saturation: "  Visibility="{Binding LampDetails_Color, Converter={StaticResource boolConv}}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding LampState_Saturation, Converter={StaticResource rangeConv}, ConverterParameter=4294967294}"  Visibility="{Binding LampDetails_Color, Converter={StaticResource boolConv}}">
 								<ToolTipService.ToolTip>
 									<StackPanel>
 										<TextBlock Text="AllJoyn raw value (UInt32):" />
@@ -89,8 +90,8 @@
 									</StackPanel>
 								</ToolTipService.ToolTip>
 							</TextBlock>
-							<TextBlock Grid.Row="3" Grid.Column="0"  Text="Temp: " />
-							<TextBlock Grid.Row="3" Grid.Column="1"  Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}">
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="Temp: "  Visibility="{Binding LampDetails_VariableColorTemp, Converter={StaticResource boolConv}}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1"  Text="{Binding LampState_ColorTemp, Converter={StaticResource kelvinConv}}" Visibility="{Binding LampDetails_VariableColorTemp, Converter={StaticResource boolConv}}">
 								<ToolTipService.ToolTip>
 									<StackPanel>
 										<TextBlock Text="AllJoyn raw value (UInt32):" />
@@ -168,6 +169,30 @@
                                 Header="Current Humidity:"
                                 StepFrequency="1"
                                 Margin="0,20,110,0"
+                                VerticalAlignment="Center" />
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="deviceViews:SwitchView" >
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="deviceViews:SwitchView">
+                    <Grid RequestedTheme="Dark" Margin="10" Padding="10" Height="160"
+                          DataContext="{TemplateBinding Device}"
+						  Background="Black" BorderBrush="#555555" BorderThickness="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name, Mode=OneTime}" FontSize="20" FontWeight="Bold"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+
+                        <ToggleSwitch Header="On/Off state" IsOn="{Binding OnOff, Mode=TwoWay}"
+                                Margin="0,20"
                                 VerticalAlignment="Center" />
 
                     </Grid>

@@ -23,6 +23,7 @@
 * DEALINGS IN THE SOFTWARE.  
 */
 
+using AllJoyn.Dsb;
 using BridgeRT;
 using System;
 using System.ComponentModel;

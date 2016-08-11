@@ -23,6 +23,8 @@
 * DEALINGS IN THE SOFTWARE.  
 */
 
+using AllJoyn.Dsb;
+
 namespace AdapterLib
 {
     internal class MockBulbDevice : AdapterDevice
@@ -32,7 +34,7 @@ namespace AdapterLib
             "MockDevices Inc", "Mock Bulb", "1", handler.Id, "")
         {
             base.LightingServiceHandler = handler;
-            Icon = new AdapterIcon("ms-appx:///AdapterLib/Icons/Light.png");
+            Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Light.png"));
         }
 
     }

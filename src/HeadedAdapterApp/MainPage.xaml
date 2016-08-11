@@ -76,6 +76,7 @@
             <ComboBoxItem Content="Lamp" />
             <ComboBoxItem Content="Temperature Sensor" />
             <ComboBoxItem Content="Humidity Sensor" />
+            <ComboBoxItem Content="Switch" />
         </ComboBox>
         <Button Content="Help" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Click="Button_Click_Help" />
 

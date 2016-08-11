@@ -30,7 +30,7 @@ namespace AllJoynSimulatorApp.DeviceViews
             {
                 Content = null;
             }
-            else if(newValue is AdapterLib.MockLightingServiceHandler)
+            else if(newValue is AdapterLib.MockBulbDevice)
             {
                 Content = new LightBulbView() { DataContext = newValue };
             }
@@ -38,9 +38,13 @@ namespace AllJoynSimulatorApp.DeviceViews
             {
                 Content = new TemperatureView() { Device = newValue as AdapterLib.MockCurrentTemperatureDevice };
             }
-            else if (newValue is AdapterLib.MockCurrentHumidityDevice   )
+            else if (newValue is AdapterLib.MockCurrentHumidityDevice)
             {
                 Content = new HumidityView() { Device = newValue as AdapterLib.MockCurrentHumidityDevice };
+            }
+            else if (newValue is AdapterLib.MockOnOffSwitchDevice)
+            {
+                Content = new SwitchView() { Device = newValue as AdapterLib.MockOnOffSwitchDevice };
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BridgeRT;
 using System.ComponentModel;
+using AllJoyn.Dsb;
 
 /*
 <interface name="org.alljoyn.SmartSpaces.Environment.CurrentHumidity">
@@ -29,40 +30,30 @@ namespace AdapterLib
 {
     public sealed class MockCurrentHumidityDevice : AdapterDevice, INotifyPropertyChanged
     {
-        private Adapter _bridge;
-        private IAdapterProperty _property;
+        private AdapterInterface _iface;
         private double _currentValue;
         private System.Threading.CancellationTokenSource _updateToken;
 
-        public MockCurrentHumidityDevice(Adapter bridge, string name, string id, double currentHumidity) :
+        public MockCurrentHumidityDevice(string name, string id, double currentHumidity) :
             base(name, "MockDevices Inc", "Mock Humidity", "1", id, "")
         {
-            _bridge = bridge;
-            _property = CreateInterface("Humidity", currentHumidity);
-            Properties.Add(_property);
+            _iface = CreateInterface("Humidity", currentHumidity);
+            BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
+            BusObjects[0].Interfaces.Add(_iface);
             CreateEmitSignalChangedSignal();
-            CurrentValue = currentHumidity;
+            _currentValue = currentHumidity;
         }
-        private static IAdapterProperty CreateInterface(string objectPath, double currentValue)
+        private static AdapterInterface CreateInterface(string objectPath, double currentValue)
         {
-            AdapterProperty property = new AdapterProperty(objectPath, "org.alljoyn.SmartSpaces.Environment.CurrentHumidity");
-            property.Attributes.Add(new AdapterAttribute("Version", (ushort)1, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Never });
-            property.Attributes[0].Annotations.Add("org.alljoyn.Bus.DocString.En", "The interface version");
-            property.Attributes.Add(new AdapterAttribute("CurrentValue", currentValue, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Always });
-            property.Attributes[1].Annotations.Add("org.alljoyn.Bus.DocString.En", "Current relative humidity value");
-            property.Attributes[1].Annotations.Add("org.alljoyn.Bus.Type.Min", "0");
-            property.Attributes.Add(new AdapterAttribute("MaxValue", 100d, E_ACCESS_TYPE.ACCESS_READ) { COVBehavior = SignalBehavior.Always });
-            property.Attributes[2].Annotations.Add("org.alljoyn.Bus.DocString.En", "Maximum value allowed for represented relative humidity");
-            return property;
-        }
-
-        private void CreateEmitSignalChangedSignal()
-        {
-            // change of value signal
-            AdapterSignal changeOfAttributeValue = new AdapterSignal(Constants.CHANGE_OF_VALUE_SIGNAL);
-            changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__PROPERTY_HANDLE, null));
-            changeOfAttributeValue.Params.Add(new AdapterValue(Constants.COV__ATTRIBUTE_HANDLE, null));
-            Signals.Add(changeOfAttributeValue);
+            var iface = new AdapterInterface("org.alljoyn.SmartSpaces.Environment.CurrentHumidity");
+            iface.Properties.Add(new AdapterAttribute("Version", (ushort)1) { COVBehavior = SignalBehavior.Never });
+            iface.Properties[0].Annotations.Add("org.alljoyn.Bus.DocString.En", "The interface version");
+            iface.Properties.Add(new AdapterAttribute("CurrentValue", currentValue) { COVBehavior = SignalBehavior.Always });
+            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.DocString.En", "Current relative humidity value");
+            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.Type.Min", "0");
+            iface.Properties.Add(new AdapterAttribute("MaxValue", 100d) { COVBehavior = SignalBehavior.Always });
+            iface.Properties[2].Annotations.Add("org.alljoyn.Bus.DocString.En", "Maximum value allowed for represented relative humidity");
+            return iface;
         }
 
         public double CurrentValue
@@ -86,11 +77,11 @@ namespace AdapterLib
 
         public void UpdateValue(double value)
         {
-            var attr = _property.Attributes.Where(a => a.Value.Name == "CurrentValue").First();
+            var attr = _iface.Properties.Where(a => a.Value.Name == "CurrentValue").First();
             if (attr.Value.Data != (object)value)
             {
                 attr.Value.Data = value;
-                _bridge.SignalChangeOfAttributeValue(this, _property, attr);
+                base.SignalChangeOfAttributeValue(_iface, attr);
             }
         }
 
