@@ -74,7 +74,7 @@ namespace AllJoynSimulatorApp
                 status.Text = "Bridge failed to initialize:\n" + ex.Message;
                 return;
             }
-            LoadBulbs();
+            LoadDevices();
         }
 
         private Guid GetDeviceID()
@@ -87,7 +87,7 @@ namespace AllJoynSimulatorApp
             }
             return (Guid)Windows.Storage.ApplicationData.Current.LocalSettings.Values["DSBDeviceId"];
         }
-        private void LoadBulbs()
+        private void LoadDevices()
         {
             var settings = ApplicationData.Current.LocalSettings;
             if (!settings.Containers.ContainsKey("Devices"))
@@ -95,7 +95,7 @@ namespace AllJoynSimulatorApp
                 // Create a set of initial bulbs
                 var bulb = new MockLightingServiceHandler($"Mock Advanced Bulb", Guid.NewGuid().ToString(), true, true, true, this.Dispatcher);
                 AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
-                bulb = new MockLightingServiceHandler($"Mock Simple Bulb", Guid.NewGuid().ToString(), false, false, false, this.Dispatcher);
+                bulb = new MockLightingServiceHandler($"Mock Simple Bulb", Guid.NewGuid().ToString(), true, false, false, this.Dispatcher);
                 AllJoynDsbServiceManager.Current.AddDevice(new MockBulbDevice(bulb));
                 AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentHumidityDevice("Mock Humidity Sensor", Guid.NewGuid().ToString(), 50));
                 AllJoynDsbServiceManager.Current.AddDevice(new MockCurrentTemperatureDevice("Mock Temperature Sensor", Guid.NewGuid().ToString(), 25));

@@ -137,7 +137,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="fade-to-black.png" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Icons\Humidity.png" />
     <Content Include="Icons\Light.png" />
+    <Content Include="Icons\Switch.png" />
+    <Content Include="Icons\Temperature.PNG" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>

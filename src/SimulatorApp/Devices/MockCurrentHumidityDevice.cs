@@ -37,6 +37,7 @@ namespace AdapterLib
         public MockCurrentHumidityDevice(string name, string id, double currentHumidity) :
             base(name, "MockDevices Inc", "Mock Humidity", "1", id, "")
         {
+            Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Humidity.png"));
             _iface = CreateInterface("Humidity", currentHumidity);
             BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
             BusObjects[0].Interfaces.Add(_iface);

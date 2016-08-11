@@ -22,6 +22,7 @@ namespace AdapterLib
             base(name, "MockDevices Inc", "Mock Switch", "1", id, "")
         {
             this.dispatcher = dispatcher;
+            Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Switch.png"));
             _interfaceOnOff = CreateOnOffInterface(isOn);
             _interfaceOn = CreateOnInterface(isOn);
             _interfaceOff = CreateOffInterface(!isOn);

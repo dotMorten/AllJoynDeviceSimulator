@@ -42,6 +42,7 @@ namespace AdapterLib
         public MockCurrentTemperatureDevice(string name, string id, double currentTemperature) : 
             base(name, "MockDevices Inc", "Mock Temperature", "1", id, "")
         {
+            Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Temperature.png"));
             _iface = CreateInterface(currentTemperature);
             BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
             BusObjects[0].Interfaces.Add(_iface);
