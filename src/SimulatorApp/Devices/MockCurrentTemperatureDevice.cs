@@ -7,30 +7,6 @@ using BridgeRT;
 using System.ComponentModel;
 using AllJoyn.Dsb;
 
-/*<interface name="org.alljoyn.SmartSpaces.Environment.CurrentTemperature">
-  <annotation name="org.alljoyn.Bus.DocString.En" value="This interface provides capability to represent current temperature."/>
-  <annotation name="org.alljoyn.Bus.Secure" value="true"/>
-  <property name="Version" type="q" access="read">
-      <annotation name="org.alljoyn.Bus.DocString.En" value="The interface version."/>
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-  </property>
-  <property name="CurrentValue" type="d" access="read">
-      <annotation name="org.alljoyn.Bus.DocString.En" value="Current temperature expressed in Celsius."/>
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-      <annotation name="org.alljoyn.Bus.Type.Units" value="degrees Celsius"/>
-  </property>
-  <property name="Precision" type="d" access="read">
-      <annotation name="org.alljoyn.Bus.DocString.En" value="The precision of the CurrentValue property. i.e. the number of degrees Celsius the actual power consumption must change before CurrentValue is updated."/>
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-      <annotation name="org.alljoyn.Bus.Type.Units" value="degrees Celsius"/>
-  </property>
-  <property name="UpdateMinTime" type="q" access="read">
-      <annotation name="org.alljoyn.Bus.DocString.En" value="The minimum time between updates of the CurrentValue property in milliseconds."/>
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-      <annotation name="org.alljoyn.Bus.Type.Units" value="milliseconds"/>
-  </property>
-</interface>*/
-
 namespace AdapterLib
 {
     public sealed class MockCurrentTemperatureDevice : AdapterDevice, INotifyPropertyChanged
@@ -43,24 +19,13 @@ namespace AdapterLib
             base(name, "MockDevices Inc", "Mock Temperature", "1", id, "")
         {
             Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Temperature.png"));
-            _iface = CreateInterface(currentTemperature);
+            _iface = AllJoynSimulatorApp.Devices.InterfaceCreators.CreateTemperature(currentTemperature);
             BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
             BusObjects[0].Interfaces.Add(_iface);
             CreateEmitSignalChangedSignal();
             _currentValue = currentTemperature;
         }
-
-        private static AdapterInterface CreateInterface(double currentValue)
-        {
-            AdapterInterface iface = new AdapterInterface("org.alljoyn.SmartSpaces.Environment.CurrentTemperature");
-            iface.Properties.Add(new AdapterAttribute("Version", (ushort)1) { COVBehavior = SignalBehavior.Never });
-            iface.Properties.Add(new AdapterAttribute("CurrentValue", currentValue) { COVBehavior = SignalBehavior.Always });
-            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.Type.Units", "degrees Celcius");
-            iface.Properties.Add(new AdapterAttribute("Precision", 0.1d) { COVBehavior = SignalBehavior.Always });
-            iface.Properties.Add(new AdapterAttribute("UpdateMinTime", (ushort)3000) { COVBehavior = SignalBehavior.Always });
-            return iface;
-        }
-
+        
         public double CurrentValue
         {
             get { return _currentValue; }

@@ -67,6 +67,8 @@ namespace AdapterLib
             LampDetails_Version = 1;
             LampDetails_Wattage = 7;
             if (!supportsColor) saturation = 0;
+            _LampStateChanged = new AdapterSignal(Constants.LAMP_STATE_CHANGED_SIGNAL_NAME);
+            _LampStateChanged.Params.Add(new AdapterValue("LampID", id));
         }
         [DataMember]
         public bool LampDetails_Color
@@ -151,6 +153,7 @@ namespace AdapterLib
                 {
                     brightness = value;
                     OnPropertyChanged();
+                    LampStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -177,6 +180,7 @@ namespace AdapterLib
                         value = kelvinToUInt(LampDetails_MinTemperature);
                     colorTemp = value;
                     OnPropertyChanged();
+                    LampStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -195,11 +199,12 @@ namespace AdapterLib
                 {
                     hue = value;
                     OnPropertyChanged();
+                    LampStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        private AdapterSignal _LampStateChanged = new AdapterSignal(Constants.LAMP_STATE_CHANGED_SIGNAL_NAME);
+        private AdapterSignal _LampStateChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -228,6 +233,7 @@ namespace AdapterLib
             }
         }
 
+        public event EventHandler LampStateChanged;
 
         public IAdapterSignal LampState_LampStateChanged
         {
@@ -251,6 +257,7 @@ namespace AdapterLib
                 {
                     OnOff = value;
                     OnPropertyChanged();
+                    LampStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -269,6 +276,7 @@ namespace AdapterLib
                 {
                     saturation = value;
                     OnPropertyChanged();
+                    LampStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -316,6 +324,7 @@ namespace AdapterLib
                 TransitionLampState(0, FromState, Period, out response);
                 await System.Threading.Tasks.Task.Delay((int)(Period + Duration)).ConfigureAwait(false);
             }
+            LampStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public uint TransitionLampState(ulong Timestamp, BridgeRT.State NewState, uint TransitionPeriod, out uint LampResponseCode)
@@ -413,6 +422,7 @@ namespace AdapterLib
             OnPropertyChanged(nameof(ColorFullBrightness));
             if (NewState.IsOn.HasValue && !NewState.IsOn.Value)
                 LampState_OnOff = false;
+            LampStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private const uint MaxUIntValue = UInt32.MaxValue - 1;

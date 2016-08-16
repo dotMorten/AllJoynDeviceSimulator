@@ -100,6 +100,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoolToVisibilityConverter.cs" />
+    <Compile Include="Devices\InterfaceCreators.cs" />
     <Compile Include="Devices\LsfEnums.cs" />
     <Compile Include="Devices\MockBulbDevice.cs" />
     <Compile Include="Devices\MockCurrentHumidityDevice.cs" />
@@ -123,9 +124,7 @@
     </AppxManifest>
     <None Include="AllJoynSimulatorApp_StoreKey.pfx" />
     <None Include="AllJoynSimulatorApp_TemporaryKey.pfx" />
-    <None Include="project.json">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LockScreenLogo.scale-200.png" />

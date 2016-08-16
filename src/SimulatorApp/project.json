@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "dotMorten.AllJoyn.DSB": "0.2.0",
+    "dotMorten.AllJoyn.DSB": "0.3.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0"
   },
   "frameworks": {

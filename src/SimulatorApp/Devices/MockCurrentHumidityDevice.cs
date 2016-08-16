@@ -7,25 +7,6 @@ using BridgeRT;
 using System.ComponentModel;
 using AllJoyn.Dsb;
 
-/*
-<interface name="org.alljoyn.SmartSpaces.Environment.CurrentHumidity">
-    <annotation name="org.alljoyn.Bus.DocString.En" value="This interface provides capability to represent current relative humidity."/>
-    <annotation name="org.alljoyn.Bus.Secure" value="true"/>
-    <property name="Version" type="q" access="read">
-        <annotation name="org.alljoyn.Bus.DocString.En" value="The interface version"/>
-        <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-    </property>
-    <property name="CurrentValue" type="y" access="read">
-        <annotation name="org.alljoyn.Bus.DocString.En" value="Current relative humidity value"/>
-        <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-        <annotation name="org.alljoyn.Bus.Type.Min" value="0"/>
-    </property>
-    <property name="MaxValue" type="y" access="read">
-        <annotation name="org.alljoyn.Bus.DocString.En" value="Maximum value allowed for represented relative humidity"/>
-        <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-    </property>
-</interface>
-*/
 namespace AdapterLib
 {
     public sealed class MockCurrentHumidityDevice : AdapterDevice, INotifyPropertyChanged
@@ -38,23 +19,11 @@ namespace AdapterLib
             base(name, "MockDevices Inc", "Mock Humidity", "1", id, "")
         {
             Icon = new AdapterIcon(new System.Uri("ms-appx:///Icons/Humidity.png"));
-            _iface = CreateInterface("Humidity", currentHumidity);
+            _iface = AllJoynSimulatorApp.Devices.InterfaceCreators.CreateHumidity(currentHumidity);
             BusObjects.Add(new AdapterBusObject("org.alljoyn.SmartSpaces.Environment"));
             BusObjects[0].Interfaces.Add(_iface);
             CreateEmitSignalChangedSignal();
             _currentValue = currentHumidity;
-        }
-        private static AdapterInterface CreateInterface(string objectPath, double currentValue)
-        {
-            var iface = new AdapterInterface("org.alljoyn.SmartSpaces.Environment.CurrentHumidity");
-            iface.Properties.Add(new AdapterAttribute("Version", (ushort)1) { COVBehavior = SignalBehavior.Never });
-            iface.Properties[0].Annotations.Add("org.alljoyn.Bus.DocString.En", "The interface version");
-            iface.Properties.Add(new AdapterAttribute("CurrentValue", currentValue) { COVBehavior = SignalBehavior.Always });
-            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.DocString.En", "Current relative humidity value");
-            iface.Properties[1].Annotations.Add("org.alljoyn.Bus.Type.Min", "0");
-            iface.Properties.Add(new AdapterAttribute("MaxValue", 100d) { COVBehavior = SignalBehavior.Always });
-            iface.Properties[2].Annotations.Add("org.alljoyn.Bus.DocString.En", "Maximum value allowed for represented relative humidity");
-            return iface;
         }
 
         public double CurrentValue
